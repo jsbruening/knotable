@@ -1,0 +1,372 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+    provider = "prisma-client-js"
+}
+
+datasource db {
+    provider  = "postgresql"
+    url       = env("DATABASE_URL")
+    directUrl = env("DIRECT_URL")
+}
+
+// Core User model
+model User {
+    id                  String    @id @default(cuid())
+    email               String    @unique
+    displayName         String?
+    avatarUrl           String?
+    githubUsername      String?
+    githubRepoUrl       String?
+    currentBloomLevel   Int       @default(1) // 1-6 Bloom's Taxonomy levels
+    totalPoints         Int       @default(0)
+    totalKudos          Int       @default(0)
+    loginStreak         Int       @default(0)
+    lastLoginAt         DateTime?
+    isAdmin             Boolean   @default(false)
+    onboardingCompleted Boolean   @default(false)
+    createdAt           DateTime  @default(now())
+    updatedAt           DateTime  @updatedAt
+
+    // Relations
+    campaigns        UserCampaign[]
+    teams            UserTeam[]
+    sentKudos        Kudo[]            @relation("KudosSent")
+    receivedKudos    Kudo[]            @relation("KudosReceived")
+    badges           UserBadge[]
+    unlockables      UserUnlockable[]
+    pointsLogs       PointsLog[]
+    notifications    Notification[]
+    quizAttempts     QuizAttempt[]
+    teamChatMessages TeamChatMessage[]
+    createdCampaigns Campaign[]        @relation("CampaignCreatedBy")
+    createdTeams     Team[]            @relation("TeamCreatedBy")
+
+    @@index([email])
+    @@index([totalPoints])
+    @@index([totalKudos])
+}
+
+// Campaign system
+model Campaign {
+    id                 String   @id @default(cuid())
+    title              String
+    description        String
+    topic              String
+    targetAudience     String?
+    startingBloomLevel Int      @default(1)
+    targetBloomLevel   Int      @default(6)
+    focusAreas         String[] // Array of focus areas
+    resourceTypes      String[] // YouTube, articles, tutorials, MOOCs
+    excludedSources    String[] // Sources to exclude
+    tone               String? // playful, academic, etc.
+    estimatedDuration  Int? // in days
+    challengeType      String?
+    teamChallengeIdeas String?
+    isActive           Boolean  @default(true)
+    isPublic           Boolean  @default(true)
+    createdById        String
+    createdAt          DateTime @default(now())
+    updatedAt          DateTime @updatedAt
+
+    // Relations
+    createdBy      User            @relation("CampaignCreatedBy", fields: [createdById], references: [id])
+    users          UserCampaign[]
+    milestones     Milestone[]
+    teamChallenges TeamChallenge[]
+
+    @@index([isActive])
+    @@index([isPublic])
+    @@index([createdById])
+}
+
+// User-Campaign relationship (many-to-many)
+model UserCampaign {
+    id                  String   @id @default(cuid())
+    userId              String
+    campaignId          String
+    currentMilestone    Int      @default(1)
+    completedMilestones Int[]    @default([]) // Array of completed milestone numbers
+    joinedAt            DateTime @default(now())
+    lastActiveAt        DateTime @default(now())
+
+    // Relations
+    user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+    campaign Campaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+
+    @@unique([userId, campaignId])
+    @@index([userId])
+    @@index([campaignId])
+}
+
+// Milestones based on Bloom's Taxonomy
+model Milestone {
+    id                String   @id @default(cuid())
+    campaignId        String
+    bloomLevel        Int // 1-6 Bloom's Taxonomy levels
+    title             String
+    objective         String // AI-generated objective
+    externalResources String[] // Admin-curated resources
+    isActive          Boolean  @default(true)
+    order             Int // Order within campaign
+    createdAt         DateTime @default(now())
+    updatedAt         DateTime @updatedAt
+
+    // Relations
+    campaign       Campaign        @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+    quizzes        Quiz[]
+    teamChallenges TeamChallenge[]
+
+    @@index([campaignId])
+    @@index([bloomLevel])
+}
+
+// Quiz system
+model Quiz {
+    id           String   @id @default(cuid())
+    milestoneId  String
+    title        String
+    questions    Json // AI-generated questions
+    passingScore Int      @default(70) // Percentage
+    timeLimit    Int? // in minutes
+    isActive     Boolean  @default(true)
+    createdAt    DateTime @default(now())
+    updatedAt    DateTime @updatedAt
+
+    // Relations
+    milestone Milestone     @relation(fields: [milestoneId], references: [id], onDelete: Cascade)
+    attempts  QuizAttempt[]
+
+    @@index([milestoneId])
+}
+
+// Quiz attempts
+model QuizAttempt {
+    id          String   @id @default(cuid())
+    userId      String
+    quizId      String
+    score       Int // Percentage score
+    answers     Json // User's answers
+    timeSpent   Int? // in seconds
+    passed      Boolean
+    attemptedAt DateTime @default(now())
+
+    // Relations
+    user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+    quiz Quiz @relation(fields: [quizId], references: [id], onDelete: Cascade)
+
+    @@index([userId])
+    @@index([quizId])
+    @@index([attemptedAt])
+}
+
+// Team system
+model Team {
+    id          String   @id @default(cuid())
+    name        String
+    description String?
+    bannerUrl   String?
+    isPublic    Boolean  @default(true)
+    maxMembers  Int      @default(10)
+    createdById String
+    createdAt   DateTime @default(now())
+    updatedAt   DateTime @updatedAt
+
+    // Relations
+    createdBy    User              @relation("TeamCreatedBy", fields: [createdById], references: [id])
+    members      UserTeam[]
+    challenges   TeamChallenge[]
+    chatMessages TeamChatMessage[]
+
+    @@index([isPublic])
+    @@index([createdById])
+}
+
+// User-Team relationship (many-to-many)
+model UserTeam {
+    id           String   @id @default(cuid())
+    userId       String
+    teamId       String
+    role         String   @default("member") // member, admin
+    joinedAt     DateTime @default(now())
+    lastActiveAt DateTime @default(now())
+
+    // Relations
+    user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+    team Team @relation(fields: [teamId], references: [id], onDelete: Cascade)
+
+    @@unique([userId, teamId])
+    @@index([userId])
+    @@index([teamId])
+}
+
+// Team challenges
+model TeamChallenge {
+    id           String    @id @default(cuid())
+    teamId       String
+    campaignId   String?
+    milestoneId  String?
+    title        String
+    description  String
+    pointsReward Int       @default(100)
+    isActive     Boolean   @default(true)
+    startDate    DateTime?
+    endDate      DateTime?
+    createdAt    DateTime  @default(now())
+    updatedAt    DateTime  @updatedAt
+
+    // Relations
+    team      Team       @relation(fields: [teamId], references: [id], onDelete: Cascade)
+    campaign  Campaign?  @relation(fields: [campaignId], references: [id])
+    milestone Milestone? @relation(fields: [milestoneId], references: [id])
+
+    @@index([teamId])
+    @@index([campaignId])
+}
+
+// Real-time team chat
+model TeamChatMessage {
+    id          String   @id @default(cuid())
+    teamId      String
+    userId      String
+    content     String
+    messageType String   @default("text") // text, image, file, system
+    metadata    Json? // Additional data for different message types
+    createdAt   DateTime @default(now())
+
+    // Relations
+    team Team @relation(fields: [teamId], references: [id], onDelete: Cascade)
+    user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+    @@index([teamId])
+    @@index([userId])
+    @@index([createdAt])
+}
+
+// Kudos system
+model Kudo {
+    id         String   @id @default(cuid())
+    senderId   String
+    receiverId String
+    type       String // "beverage", "kudo_bomb", "custom"
+    reason     String
+    points     Int      @default(10)
+    createdAt  DateTime @default(now())
+
+    // Relations
+    sender   User @relation("KudosSent", fields: [senderId], references: [id], onDelete: Cascade)
+    receiver User @relation("KudosReceived", fields: [receiverId], references: [id], onDelete: Cascade)
+
+    @@index([senderId])
+    @@index([receiverId])
+    @@index([createdAt])
+}
+
+// Badge system
+model Badge {
+    id             String   @id @default(cuid())
+    name           String   @unique
+    description    String
+    iconUrl        String?
+    category       String // milestone, campaign, team, special
+    rarity         String   @default("common") // common, rare, epic, legendary
+    pointsRequired Int      @default(0)
+    isActive       Boolean  @default(true)
+    createdAt      DateTime @default(now())
+
+    // Relations
+    users UserBadge[]
+
+    @@index([category])
+    @@index([rarity])
+}
+
+// User-Badge relationship (many-to-many)
+model UserBadge {
+    id       String   @id @default(cuid())
+    userId   String
+    badgeId  String
+    earnedAt DateTime @default(now())
+    metadata Json? // Additional data about how it was earned
+
+    // Relations
+    user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+    badge Badge @relation(fields: [badgeId], references: [id], onDelete: Cascade)
+
+    @@unique([userId, badgeId])
+    @@index([userId])
+    @@index([badgeId])
+}
+
+// Unlockables system
+model Unlockable {
+    id             String   @id @default(cuid())
+    name           String
+    description    String
+    type           String // profile_theme, avatar, frame, badge, wallpaper, skip_token, secret_campaign, bonus_resource, copilot_token
+    pointsRequired Int
+    rarity         String   @default("common")
+    metadata       Json? // Additional data (theme colors, avatar URL, etc.)
+    isActive       Boolean  @default(true)
+    createdAt      DateTime @default(now())
+
+    // Relations
+    users UserUnlockable[]
+
+    @@index([type])
+    @@index([rarity])
+    @@index([pointsRequired])
+}
+
+// User-Unlockable relationship (many-to-many)
+model UserUnlockable {
+    id           String   @id @default(cuid())
+    userId       String
+    unlockableId String
+    unlockedAt   DateTime @default(now())
+    isActive     Boolean  @default(true)
+
+    // Relations
+    user       User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+    unlockable Unlockable @relation(fields: [unlockableId], references: [id], onDelete: Cascade)
+
+    @@unique([userId, unlockableId])
+    @@index([userId])
+    @@index([unlockableId])
+}
+
+// Points tracking
+model PointsLog {
+    id        String   @id @default(cuid())
+    userId    String
+    points    Int // Can be positive or negative
+    reason    String // milestone_completion, kudo_given, kudo_received, team_challenge, etc.
+    metadata  Json? // Additional context
+    createdAt DateTime @default(now())
+
+    // Relations
+    user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+    @@index([userId])
+    @@index([createdAt])
+}
+
+// Notification system
+model Notification {
+    id        String   @id @default(cuid())
+    userId    String
+    type      String // kudo_received, badge_earned, team_invite, milestone_complete, etc.
+    title     String
+    message   String
+    isRead    Boolean  @default(false)
+    metadata  Json? // Additional data
+    createdAt DateTime @default(now())
+
+    // Relations
+    user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+    @@index([userId])
+    @@index([isRead])
+    @@index([createdAt])
+}
