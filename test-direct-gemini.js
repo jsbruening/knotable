@@ -80,3 +80,4 @@ async function testDirectGeminiAPI() {
 }
 
 testDirectGeminiAPI().catch(console.error);
+

@@ -209,3 +209,4 @@ Format as JSON:
     throw new Error("Failed to generate external resources");
   }
 }
+
