@@ -2,9 +2,23 @@
 
 import { useAuth } from "~/components/auth/auth-provider";
 import { Button } from "~/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "~/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "~/components/ui/card";
 import { Badge } from "~/components/ui/badge";
-import { Target, Users, Trophy, Star, Zap, BookOpen, Github } from "lucide-react";
+import {
+  Target,
+  Users,
+  Trophy,
+  Star,
+  Zap,
+  BookOpen,
+  Github,
+} from "lucide-react";
 import Link from "next/link";
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
@@ -32,18 +46,24 @@ export default function HomePage() {
   }
 
   return (
-    <div className="min-h-screen bg-app-gradient">
+    <div className="bg-app-gradient min-h-screen">
       {/* Hero Section */}
       <div className="container mx-auto px-4 py-16">
-        <div className="max-w-4xl mx-auto text-center">
-          <img src="/images/logo.png" alt="Knotable logo" className="h-12 w-12 mx-auto mb-6" />
-          <h1 className="text-5xl font-bold text-white mb-6">
-            Level Up Your Learning with <span className="text-blue-300">Knotable</span>
+        <div className="mx-auto max-w-4xl text-center">
+          <img
+            src="/images/logo.png"
+            alt="Knotable logo"
+            className="mx-auto mb-6 h-12 w-12"
+          />
+          <h1 className="mb-6 text-5xl font-bold text-white">
+            Level Up Your Learning with{" "}
+            <span className="text-blue-300">Knotable</span>
           </h1>
-          <p className="text-xl text-white/80 mb-8 max-w-2xl mx-auto">
-            Join AI-generated campaigns, collaborate with teams, and earn badges as you progress through Bloom's Taxonomy levels.
+          <p className="mx-auto mb-8 max-w-2xl text-xl text-white/80">
+            Join AI-generated campaigns, collaborate with teams, and earn badges
+            as you progress through Bloom's Taxonomy levels.
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+          <div className="flex flex-col justify-center gap-4 sm:flex-row">
             <Button size="lg" asChild>
               <Link href="/auth/signin">Get Started</Link>
             </Button>
@@ -56,85 +76,94 @@ export default function HomePage() {
 
       {/* Features Section */}
       <div id="features" className="container mx-auto px-4 py-16">
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-white mb-4">
+        <div className="mx-auto max-w-6xl">
+          <div className="mb-12 text-center">
+            <h2 className="mb-4 text-3xl font-bold text-white">
               Why Choose Knotable?
             </h2>
             <p className="text-lg text-white/80">
-              Experience learning like never before with our unique gamification system
+              Experience learning like never before with our unique gamification
+              system
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            <Card className="hover:shadow-lg transition-shadow glass-card border-white/10">
+          <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
+            <Card className="glass-card border-white/10 transition-shadow hover:shadow-lg">
               <CardHeader>
-                <div className="w-12 h-12 rounded-lg flex items-center justify-center mb-4 bg-white/10 text-blue-300">
-                  <Target className="w-6 h-6" />
+                <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-white/10 text-blue-300">
+                  <Target className="h-6 w-6" />
                 </div>
-                <CardTitle className="text-white">AI-Generated Campaigns</CardTitle>
+                <CardTitle className="text-white">
+                  AI-Generated Campaigns
+                </CardTitle>
                 <CardDescription className="text-white/70">
-                  Learn through structured campaigns based on Bloom's Taxonomy, created with AI assistance
+                  Learn through structured campaigns based on Bloom's Taxonomy,
+                  created with AI assistance
                 </CardDescription>
               </CardHeader>
             </Card>
 
-            <Card className="hover:shadow-lg transition-shadow glass-card border-white/10">
+            <Card className="glass-card border-white/10 transition-shadow hover:shadow-lg">
               <CardHeader>
-                <div className="w-12 h-12 rounded-lg flex items-center justify-center mb-4 bg-white/10 text-green-300">
-                  <Users className="w-6 h-6" />
+                <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-white/10 text-green-300">
+                  <Users className="h-6 w-6" />
                 </div>
                 <CardTitle className="text-white">Team Collaboration</CardTitle>
                 <CardDescription className="text-white/70">
-                  Join teams, participate in challenges, and chat in real-time with your learning partners
+                  Join teams, participate in challenges, and chat in real-time
+                  with your learning partners
                 </CardDescription>
               </CardHeader>
             </Card>
 
-            <Card className="hover:shadow-lg transition-shadow glass-card border-white/10">
+            <Card className="glass-card border-white/10 transition-shadow hover:shadow-lg">
               <CardHeader>
-                <div className="w-12 h-12 rounded-lg flex items-center justify-center mb-4 bg-white/10 text-purple-300">
-                  <Trophy className="w-6 h-6" />
+                <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-white/10 text-purple-300">
+                  <Trophy className="h-6 w-6" />
                 </div>
                 <CardTitle className="text-white">Badges & Points</CardTitle>
                 <CardDescription className="text-white/70">
-                  Earn badges for achievements and points for completing milestones and challenges
+                  Earn badges for achievements and points for completing
+                  milestones and challenges
                 </CardDescription>
               </CardHeader>
             </Card>
 
-            <Card className="hover:shadow-lg transition-shadow glass-card border-white/10">
+            <Card className="glass-card border-white/10 transition-shadow hover:shadow-lg">
               <CardHeader>
-                <div className="w-12 h-12 rounded-lg flex items-center justify-center mb-4 bg-white/10 text-yellow-300">
-                  <Star className="w-6 h-6" />
+                <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-white/10 text-yellow-300">
+                  <Star className="h-6 w-6" />
                 </div>
                 <CardTitle className="text-white">Kudos System</CardTitle>
                 <CardDescription className="text-white/70">
-                  Give and receive kudos with fun features like "I owe you a beverage" and "Kudo Bomb"
+                  Give and receive kudos with fun features like "I owe you a
+                  beverage" and "Kudo Bomb"
                 </CardDescription>
               </CardHeader>
             </Card>
 
-            <Card className="hover:shadow-lg transition-shadow glass-card border-white/10">
+            <Card className="glass-card border-white/10 transition-shadow hover:shadow-lg">
               <CardHeader>
-                <div className="w-12 h-12 rounded-lg flex items-center justify-center mb-4 bg-white/10 text-pink-300">
-                  <Zap className="w-6 h-6" />
+                <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-white/10 text-pink-300">
+                  <Zap className="h-6 w-6" />
                 </div>
                 <CardTitle className="text-white">Unlockables</CardTitle>
                 <CardDescription className="text-white/70">
-                  Spend points on profile themes, avatars, skip tokens, and secret campaigns
+                  Spend points on profile themes, avatars, skip tokens, and
+                  secret campaigns
                 </CardDescription>
               </CardHeader>
             </Card>
 
-            <Card className="hover:shadow-lg transition-shadow glass-card border-white/10">
+            <Card className="glass-card border-white/10 transition-shadow hover:shadow-lg">
               <CardHeader>
-                <div className="w-12 h-12 rounded-lg flex items-center justify-center mb-4 bg-white/10 text-orange-300">
-                  <BookOpen className="w-6 h-6" />
+                <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-white/10 text-orange-300">
+                  <BookOpen className="h-6 w-6" />
                 </div>
                 <CardTitle className="text-white">Bloom's Taxonomy</CardTitle>
                 <CardDescription className="text-white/70">
-                  Progress through 6 levels from Remember to Create, with AI-generated objectives
+                  Progress through 6 levels from Remember to Create, with
+                  AI-generated objectives
                 </CardDescription>
               </CardHeader>
             </Card>
@@ -145,17 +174,18 @@ export default function HomePage() {
       {/* CTA Section */}
       <div className="bg-white/5 py-16">
         <div className="container mx-auto px-4">
-          <div className="max-w-3xl mx-auto text-center">
-            <h2 className="text-3xl font-bold text-white mb-4">
+          <div className="mx-auto max-w-3xl text-center">
+            <h2 className="mb-4 text-3xl font-bold text-white">
               Ready to Start Your Learning Journey?
             </h2>
-            <p className="text-lg text-white/80 mb-8">
-              Join thousands of learners who are already leveling up with Knotable
+            <p className="mb-8 text-lg text-white/80">
+              Join thousands of learners who are already leveling up with
+              Knotable
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <div className="flex flex-col justify-center gap-4 sm:flex-row">
               <Button size="lg" asChild>
                 <Link href="/auth/signin">
-                  <Github className="w-5 h-5 mr-2" />
+                  <Github className="mr-2 h-5 w-5" />
                   Sign in with GitHub
                 </Link>
               </Button>
@@ -168,17 +198,23 @@ export default function HomePage() {
       </div>
 
       {/* Footer */}
-      <footer className="bg-black/20 text-white py-8">
+      <footer className="bg-black/20 py-8 text-white">
         <div className="container mx-auto px-4">
-          <div className="max-w-4xl mx-auto text-center">
-            <h3 className="text-2xl font-bold mb-4">Knotable</h3>
-            <p className="text-white/70 mb-4">
+          <div className="mx-auto max-w-4xl text-center">
+            <h3 className="mb-4 text-2xl font-bold">Knotable</h3>
+            <p className="mb-4 text-white/70">
               Gamified learning platform powered by AI and Bloom's Taxonomy
             </p>
             <div className="flex justify-center space-x-6 text-sm text-white/70">
-              <Link href="/privacy" className="hover:text-white">Privacy Policy</Link>
-              <Link href="/terms" className="hover:text-white">Terms of Service</Link>
-              <Link href="/contact" className="hover:text-white">Contact</Link>
+              <Link href="/privacy" className="hover:text-white">
+                Privacy Policy
+              </Link>
+              <Link href="/terms" className="hover:text-white">
+                Terms of Service
+              </Link>
+              <Link href="/contact" className="hover:text-white">
+                Contact
+              </Link>
             </div>
           </div>
         </div>

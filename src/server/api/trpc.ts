@@ -43,7 +43,10 @@ export const createTRPCContext = async (opts: { headers: Headers }) => {
     const token = authHeader.substring(7);
 
     try {
-      const { data: { user: supabaseUser }, error } = await supabaseAdmin.auth.getUser(token);
+      const {
+        data: { user: supabaseUser },
+        error,
+      } = await supabaseAdmin.auth.getUser(token);
 
       if (supabaseUser && !error) {
         // Get or create user in our database
@@ -58,7 +61,10 @@ export const createTRPCContext = async (opts: { headers: Headers }) => {
                 (supabaseUser.user_metadata?.full_name as string | undefined) ??
                 (supabaseUser.user_metadata?.name as string | undefined) ??
                 email.split("@")[0],
-              avatarUrl: (supabaseUser.user_metadata?.avatar_url as string | undefined) ?? undefined,
+              avatarUrl:
+                (supabaseUser.user_metadata?.avatar_url as
+                  | string
+                  | undefined) ?? undefined,
             },
           });
         }

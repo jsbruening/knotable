@@ -58,7 +58,9 @@ export function TRPCReactProvider(props: { children: React.ReactNode }) {
               "x-trpc-source": "nextjs-react",
             };
             try {
-              const { data: { session } } = await supabase.auth.getSession();
+              const {
+                data: { session },
+              } = await supabase.auth.getSession();
               const accessToken = session?.access_token;
               if (accessToken) {
                 headerObj["authorization"] = `Bearer ${accessToken}`;

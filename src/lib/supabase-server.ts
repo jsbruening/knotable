@@ -1,5 +1,5 @@
-import { createClient } from '@supabase/supabase-js'
-import { env } from '~/env.js'
+import { createClient } from "@supabase/supabase-js";
+import { env } from "~/env.js";
 
 // Server-side Supabase client (for API routes and server-side operations)
 export const supabaseAdmin = createClient(
@@ -8,8 +8,7 @@ export const supabaseAdmin = createClient(
   {
     auth: {
       autoRefreshToken: false,
-      persistSession: false
-    }
-  }
-)
-
+      persistSession: false,
+    },
+  },
+);

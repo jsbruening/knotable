@@ -6,10 +6,12 @@ import { Geist } from "next/font/google";
 import { TRPCReactProvider } from "~/trpc/react";
 import { AuthProvider } from "~/components/auth/auth-provider";
 import { Toaster } from "~/components/ui/sonner";
+import { GlobalNav } from "~/components/global-nav";
 
 export const metadata: Metadata = {
   title: "Knotable - Gamified Learning Platform",
-  description: "Level up your learning with AI-generated campaigns, teams, and gamification",
+  description:
+    "Level up your learning with AI-generated campaigns, teams, and gamification",
   icons: [
     { rel: "icon", url: "/images/logo.png" },
     { rel: "shortcut icon", url: "/images/logo.png" },
@@ -30,6 +32,7 @@ export default function RootLayout({
       <body className="bg-app-gradient">
         <TRPCReactProvider>
           <AuthProvider>
+            <GlobalNav />
             {children}
             <Toaster />
           </AuthProvider>

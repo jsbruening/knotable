@@ -2,12 +2,25 @@
 
 import { useState, useEffect } from "react";
 import { Button } from "~/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "~/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "~/components/ui/card";
 import { Badge } from "~/components/ui/badge";
 import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
 import { Textarea } from "~/components/ui/textarea";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "~/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "~/components/ui/dialog";
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar";
 import { Users, Plus, MessageCircle, Crown } from "lucide-react";
 import { api } from "~/trpc/react";
@@ -21,7 +34,9 @@ interface JoinTeamsProps {
 }
 
 export function JoinTeams({ onNext, onPrevious, data }: JoinTeamsProps) {
-  const [selectedTeams, setSelectedTeams] = useState<string[]>(data.selectedTeams || []);
+  const [selectedTeams, setSelectedTeams] = useState<string[]>(
+    data.selectedTeams || [],
+  );
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [createTeamData, setCreateTeamData] = useState({
     name: "",
@@ -49,12 +64,12 @@ export function JoinTeams({ onNext, onPrevious, data }: JoinTeamsProps) {
   const handleTeamToggle = async (teamId: string) => {
     if (selectedTeams.includes(teamId)) {
       // Remove from selection
-      setSelectedTeams(prev => prev.filter(id => id !== teamId));
+      setSelectedTeams((prev) => prev.filter((id) => id !== teamId));
     } else {
       // Add to selection and join
       try {
         await joinTeamMutation.mutateAsync({ teamId });
-        setSelectedTeams(prev => [...prev, teamId]);
+        setSelectedTeams((prev) => [...prev, teamId]);
         await Promise.all([
           utils.team.getAll.invalidate(),
           utils.team.getUserTeams.invalidate(),
@@ -68,7 +83,7 @@ export function JoinTeams({ onNext, onPrevious, data }: JoinTeamsProps) {
   const handleCreateTeam = async () => {
     try {
       const newTeam = await createTeamMutation.mutateAsync(createTeamData);
-      setSelectedTeams(prev => [...prev, newTeam.id]);
+      setSelectedTeams((prev) => [...prev, newTeam.id]);
       setIsCreateDialogOpen(false);
       setCreateTeamData({ name: "", description: "", isPublic: true });
       // Refresh team lists so the new team appears immediately
@@ -91,8 +106,8 @@ export function JoinTeams({ onNext, onPrevious, data }: JoinTeamsProps) {
 
   if (isLoading) {
     return (
-      <div className="text-center py-8">
-        <div className="h-8 w-8 animate-spin rounded-full border-4 border-gray-300 border-t-blue-600 mx-auto mb-4"></div>
+      <div className="py-8 text-center">
+        <div className="mx-auto mb-4 h-8 w-8 animate-spin rounded-full border-4 border-gray-300 border-t-blue-600"></div>
         <p className="text-gray-600">Loading teams...</p>
       </div>
     );
@@ -101,9 +116,10 @@ export function JoinTeams({ onNext, onPrevious, data }: JoinTeamsProps) {
   return (
     <div className="space-y-6">
       <div className="text-center">
-        <h3 className="text-xl font-semibold mb-2">Join or Create Teams</h3>
+        <h3 className="mb-2 text-xl font-semibold">Join or Create Teams</h3>
         <p className="text-gray-600">
-          Teams help you collaborate and learn together. Join existing teams or create your own!
+          Teams help you collaborate and learn together. Join existing teams or
+          create your own!
         </p>
       </div>
 
@@ -112,7 +128,7 @@ export function JoinTeams({ onNext, onPrevious, data }: JoinTeamsProps) {
         <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
           <DialogTrigger asChild>
             <Button variant="outline" className="mb-4">
-              <Plus className="w-4 h-4 mr-2" />
+              <Plus className="mr-2 h-4 w-4" />
               Create New Team
             </Button>
           </DialogTrigger>
@@ -120,7 +136,8 @@ export function JoinTeams({ onNext, onPrevious, data }: JoinTeamsProps) {
             <DialogHeader>
               <DialogTitle>Create a New Team</DialogTitle>
               <DialogDescription>
-                Create a team to collaborate with others on your learning journey.
+                Create a team to collaborate with others on your learning
+                journey.
               </DialogDescription>
             </DialogHeader>
             <div className="space-y-4">
@@ -129,7 +146,12 @@ export function JoinTeams({ onNext, onPrevious, data }: JoinTeamsProps) {
                 <Input
                   id="teamName"
                   value={createTeamData.name}
-                  onChange={(e) => setCreateTeamData(prev => ({ ...prev, name: e.target.value }))}
+                  onChange={(e) =>
+                    setCreateTeamData((prev) => ({
+                      ...prev,
+                      name: e.target.value,
+                    }))
+                  }
                   placeholder="Enter team name"
                 />
               </div>
@@ -138,16 +160,27 @@ export function JoinTeams({ onNext, onPrevious, data }: JoinTeamsProps) {
                 <Textarea
                   id="teamDescription"
                   value={createTeamData.description}
-                  onChange={(e) => setCreateTeamData(prev => ({ ...prev, description: e.target.value }))}
+                  onChange={(e) =>
+                    setCreateTeamData((prev) => ({
+                      ...prev,
+                      description: e.target.value,
+                    }))
+                  }
                   placeholder="Describe your team's goals..."
                   rows={3}
                 />
               </div>
               <div className="flex justify-end space-x-2">
-                <Button variant="outline" onClick={() => setIsCreateDialogOpen(false)}>
+                <Button
+                  variant="outline"
+                  onClick={() => setIsCreateDialogOpen(false)}
+                >
                   Cancel
                 </Button>
-                <Button onClick={handleCreateTeam} disabled={!createTeamData.name.trim()}>
+                <Button
+                  onClick={handleCreateTeam}
+                  disabled={!createTeamData.name.trim()}
+                >
                   Create Team
                 </Button>
               </div>
@@ -158,11 +191,12 @@ export function JoinTeams({ onNext, onPrevious, data }: JoinTeamsProps) {
 
       {teams?.teams.length === 0 ? (
         <Card>
-          <CardContent className="text-center py-8">
-            <Users className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-            <h3 className="text-lg font-semibold mb-2">No teams available</h3>
-            <p className="text-gray-600 mb-4">
-              There are no public teams available right now. Create your own team!
+          <CardContent className="py-8 text-center">
+            <Users className="mx-auto mb-4 h-12 w-12 text-gray-400" />
+            <h3 className="mb-2 text-lg font-semibold">No teams available</h3>
+            <p className="mb-4 text-gray-600">
+              There are no public teams available right now. Create your own
+              team!
             </p>
             <Button onClick={handleSkip} variant="outline">
               Skip for now
@@ -170,31 +204,38 @@ export function JoinTeams({ onNext, onPrevious, data }: JoinTeamsProps) {
           </CardContent>
         </Card>
       ) : (
-        <div className="space-y-4 max-h-96 overflow-y-auto">
+        <div className="max-h-96 space-y-4 overflow-y-auto">
           {teams?.teams.map((team) => (
             <Card
               key={team.id}
-              className={`cursor-pointer transition-all ${selectedTeams.includes(team.id)
-                ? "ring-2 ring-blue-500 bg-blue-50"
-                : "hover:shadow-md"
-                }`}
+              className={`cursor-pointer transition-all ${
+                selectedTeams.includes(team.id)
+                  ? "bg-blue-50 ring-2 ring-blue-500"
+                  : "hover:shadow-md"
+              }`}
               onClick={() => handleTeamToggle(team.id)}
             >
               <CardHeader className="pb-3">
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
-                    <CardTitle className="text-lg flex items-center space-x-2">
+                    <CardTitle className="flex items-center space-x-2 text-lg">
                       <span>{team.name}</span>
                       {team.createdBy.id === data.userId && (
-                        <Crown className="w-4 h-4 text-yellow-500" />
+                        <Crown className="h-4 w-4 text-yellow-500" />
                       )}
                     </CardTitle>
                     <CardDescription className="mt-1">
                       {team.description || "No description provided"}
                     </CardDescription>
                   </div>
-                  <div className="flex items-center space-x-2 ml-4">
-                    <Badge variant={selectedTeams.includes(team.id) ? "default" : "secondary"}>
+                  <div className="ml-4 flex items-center space-x-2">
+                    <Badge
+                      variant={
+                        selectedTeams.includes(team.id)
+                          ? "default"
+                          : "secondary"
+                      }
+                    >
                       {selectedTeams.includes(team.id) ? "Joined" : "Join"}
                     </Badge>
                   </div>
@@ -203,24 +244,26 @@ export function JoinTeams({ onNext, onPrevious, data }: JoinTeamsProps) {
               <CardContent className="pt-0">
                 <div className="flex items-center space-x-4 text-sm text-gray-600">
                   <div className="flex items-center space-x-1">
-                    <Users className="w-4 h-4" />
-                    <span>{team._count.members}/{team.maxMembers} members</span>
+                    <Users className="h-4 w-4" />
+                    <span>
+                      {team._count.members}/{team.maxMembers} members
+                    </span>
                   </div>
                   <div className="flex items-center space-x-1">
-                    <MessageCircle className="w-4 h-4" />
+                    <MessageCircle className="h-4 w-4" />
                     <span>Team chat</span>
                   </div>
                 </div>
 
-                <div className="flex items-center space-x-2 mt-3">
-                  <Avatar className="w-6 h-6">
-                    <AvatarImage src={team.createdBy.avatarUrl} />
+                <div className="mt-3 flex items-center space-x-2">
+                  <Avatar className="h-6 w-6">
+                    <AvatarImage src={team.createdBy.avatarUrl || undefined} />
                     <AvatarFallback className="text-xs">
-                      {team.createdBy.displayName?.charAt(0) || team.createdBy.email?.charAt(0)}
+                      {team.createdBy.displayName?.charAt(0) || "?"}
                     </AvatarFallback>
                   </Avatar>
                   <span className="text-sm text-gray-600">
-                    Created by {team.createdBy.displayName || team.createdBy.email}
+                    Created by {team.createdBy.displayName || "Unknown"}
                   </span>
                 </div>
               </CardContent>
@@ -245,4 +288,3 @@ export function JoinTeams({ onNext, onPrevious, data }: JoinTeamsProps) {
     </div>
   );
 }
-

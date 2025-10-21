@@ -1,14 +1,20 @@
 import { z } from "zod";
-import { createTRPCRouter, protectedProcedure, publicProcedure } from "~/server/api/trpc";
+import {
+  createTRPCRouter,
+  protectedProcedure,
+  publicProcedure,
+} from "~/server/api/trpc";
 import { TRPCError } from "@trpc/server";
 
 export const teamRouter = createTRPCRouter({
   // Get all public teams
   getAll: publicProcedure
-    .input(z.object({
-      limit: z.number().min(1).max(100).default(10),
-      cursor: z.string().nullish(),
-    }))
+    .input(
+      z.object({
+        limit: z.number().min(1).max(100).default(10),
+        cursor: z.string().nullish(),
+      }),
+    )
     .query(async ({ ctx, input }) => {
       const teams = await ctx.db.team.findMany({
         where: { isPublic: true },
@@ -50,7 +56,12 @@ export const teamRouter = createTRPCRouter({
           members: {
             include: {
               user: {
-                select: { id: true, displayName: true, avatarUrl: true, totalPoints: true },
+                select: {
+                  id: true,
+                  displayName: true,
+                  avatarUrl: true,
+                  totalPoints: true,
+                },
               },
             },
             orderBy: { joinedAt: "asc" },
@@ -74,13 +85,15 @@ export const teamRouter = createTRPCRouter({
 
   // Create a new team
   create: protectedProcedure
-    .input(z.object({
-      name: z.string().min(1).max(50),
-      description: z.string().optional(),
-      bannerUrl: z.string().url().optional(),
-      isPublic: z.boolean().default(true),
-      maxMembers: z.number().min(2).max(50).default(10),
-    }))
+    .input(
+      z.object({
+        name: z.string().min(1).max(50),
+        description: z.string().optional(),
+        bannerUrl: z.string().url().optional(),
+        isPublic: z.boolean().default(true),
+        maxMembers: z.number().min(2).max(50).default(10),
+      }),
+    )
     .mutation(async ({ ctx, input }) => {
       const team = await ctx.db.team.create({
         data: {
@@ -122,7 +135,10 @@ export const teamRouter = createTRPCRouter({
       }
 
       if (!team.isPublic) {
-        throw new TRPCError({ code: "FORBIDDEN", message: "Team is not public" });
+        throw new TRPCError({
+          code: "FORBIDDEN",
+          message: "Team is not public",
+        });
       }
 
       if (team._count.members >= team.maxMembers) {
@@ -140,7 +156,10 @@ export const teamRouter = createTRPCRouter({
       });
 
       if (existingMembership) {
-        throw new TRPCError({ code: "CONFLICT", message: "Already a member of this team" });
+        throw new TRPCError({
+          code: "CONFLICT",
+          message: "Already a member of this team",
+        });
       }
 
       return ctx.db.userTeam.create({
@@ -175,12 +194,18 @@ export const teamRouter = createTRPCRouter({
       });
 
       if (!membership) {
-        throw new TRPCError({ code: "NOT_FOUND", message: "Not a member of this team" });
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Not a member of this team",
+        });
       }
 
       // Check if user is the creator
       if (membership.team.createdById === ctx.user.id) {
-        throw new TRPCError({ code: "BAD_REQUEST", message: "Team creator cannot leave. Transfer ownership first." });
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "Team creator cannot leave. Transfer ownership first.",
+        });
       }
 
       return ctx.db.userTeam.delete({
@@ -210,11 +235,13 @@ export const teamRouter = createTRPCRouter({
 
   // Get team chat messages
   getChatMessages: protectedProcedure
-    .input(z.object({
-      teamId: z.string(),
-      limit: z.number().min(1).max(100).default(50),
-      cursor: z.string().nullish(),
-    }))
+    .input(
+      z.object({
+        teamId: z.string(),
+        limit: z.number().min(1).max(100).default(50),
+        cursor: z.string().nullish(),
+      }),
+    )
     .query(async ({ ctx, input }) => {
       // Check if user is a member of the team
       const membership = await ctx.db.userTeam.findUnique({
@@ -227,7 +254,10 @@ export const teamRouter = createTRPCRouter({
       });
 
       if (!membership) {
-        throw new TRPCError({ code: "FORBIDDEN", message: "Not a member of this team" });
+        throw new TRPCError({
+          code: "FORBIDDEN",
+          message: "Not a member of this team",
+        });
       }
 
       const messages = await ctx.db.teamChatMessage.findMany({
@@ -256,12 +286,16 @@ export const teamRouter = createTRPCRouter({
 
   // Send chat message
   sendMessage: protectedProcedure
-    .input(z.object({
-      teamId: z.string(),
-      content: z.string().min(1).max(1000),
-      messageType: z.enum(["text", "image", "file", "system"]).default("text"),
-      metadata: z.record(z.any()).optional(),
-    }))
+    .input(
+      z.object({
+        teamId: z.string(),
+        content: z.string().min(1).max(1000),
+        messageType: z
+          .enum(["text", "image", "file", "system"])
+          .default("text"),
+        metadata: z.record(z.any()).optional(),
+      }),
+    )
     .mutation(async ({ ctx, input }) => {
       // Check if user is a member of the team
       const membership = await ctx.db.userTeam.findUnique({
@@ -274,7 +308,10 @@ export const teamRouter = createTRPCRouter({
       });
 
       if (!membership) {
-        throw new TRPCError({ code: "FORBIDDEN", message: "Not a member of this team" });
+        throw new TRPCError({
+          code: "FORBIDDEN",
+          message: "Not a member of this team",
+        });
       }
 
       return ctx.db.teamChatMessage.create({
@@ -295,16 +332,18 @@ export const teamRouter = createTRPCRouter({
 
   // Create team challenge
   createChallenge: protectedProcedure
-    .input(z.object({
-      teamId: z.string(),
-      title: z.string().min(1),
-      description: z.string().min(1),
-      pointsReward: z.number().min(1).default(100),
-      campaignId: z.string().optional(),
-      milestoneId: z.string().optional(),
-      startDate: z.date().optional(),
-      endDate: z.date().optional(),
-    }))
+    .input(
+      z.object({
+        teamId: z.string(),
+        title: z.string().min(1),
+        description: z.string().min(1),
+        pointsReward: z.number().min(1).default(100),
+        campaignId: z.string().optional(),
+        milestoneId: z.string().optional(),
+        startDate: z.date().optional(),
+        endDate: z.date().optional(),
+      }),
+    )
     .mutation(async ({ ctx, input }) => {
       // Check if user is an admin of the team
       const membership = await ctx.db.userTeam.findUnique({
@@ -317,7 +356,10 @@ export const teamRouter = createTRPCRouter({
       });
 
       if (!membership || membership.role !== "admin") {
-        throw new TRPCError({ code: "FORBIDDEN", message: "Admin access required" });
+        throw new TRPCError({
+          code: "FORBIDDEN",
+          message: "Admin access required",
+        });
       }
 
       return ctx.db.teamChallenge.create({
@@ -344,4 +386,3 @@ export const teamRouter = createTRPCRouter({
       });
     }),
 });
-

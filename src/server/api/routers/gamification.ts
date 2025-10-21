@@ -1,5 +1,9 @@
 import { z } from "zod";
-import { createTRPCRouter, protectedProcedure, publicProcedure } from "~/server/api/trpc";
+import {
+  createTRPCRouter,
+  protectedProcedure,
+  publicProcedure,
+} from "~/server/api/trpc";
 import { TRPCError } from "@trpc/server";
 
 export const gamificationRouter = createTRPCRouter({
@@ -31,14 +35,19 @@ export const gamificationRouter = createTRPCRouter({
 
   // Give kudos to another user
   giveKudos: protectedProcedure
-    .input(z.object({
-      receiverId: z.string(),
-      type: z.enum(["beverage", "kudo_bomb", "custom"]),
-      reason: z.string().min(1),
-    }))
+    .input(
+      z.object({
+        receiverId: z.string(),
+        type: z.enum(["beverage", "kudo_bomb", "custom"]),
+        reason: z.string().min(1),
+      }),
+    )
     .mutation(async ({ ctx, input }) => {
       if (input.receiverId === ctx.user.id) {
-        throw new TRPCError({ code: "BAD_REQUEST", message: "Cannot give kudos to yourself" });
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "Cannot give kudos to yourself",
+        });
       }
 
       const receiver = await ctx.db.user.findUnique({
@@ -46,7 +55,10 @@ export const gamificationRouter = createTRPCRouter({
       });
 
       if (!receiver) {
-        throw new TRPCError({ code: "NOT_FOUND", message: "Receiver not found" });
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Receiver not found",
+        });
       }
 
       const points = input.type === "kudo_bomb" ? 30 : 10;
@@ -70,7 +82,7 @@ export const gamificationRouter = createTRPCRouter({
 
       await ctx.db.user.update({
         where: { id: input.receiverId },
-        data: { 
+        data: {
           totalPoints: { increment: points },
           totalKudos: { increment: 1 },
         },
@@ -110,9 +122,11 @@ export const gamificationRouter = createTRPCRouter({
 
   // Get kudos leaderboard
   getKudosLeaderboard: publicProcedure
-    .input(z.object({
-      limit: z.number().min(1).max(50).default(10),
-    }))
+    .input(
+      z.object({
+        limit: z.number().min(1).max(50).default(10),
+      }),
+    )
     .query(async ({ ctx, input }) => {
       const users = await ctx.db.user.findMany({
         select: {
@@ -148,9 +162,11 @@ export const gamificationRouter = createTRPCRouter({
 
   // Get available unlockables
   getAvailableUnlockables: publicProcedure
-    .input(z.object({
-      type: z.string().optional(),
-    }))
+    .input(
+      z.object({
+        type: z.string().optional(),
+      }),
+    )
     .query(async ({ ctx, input }) => {
       return ctx.db.unlockable.findMany({
         where: {
@@ -179,15 +195,24 @@ export const gamificationRouter = createTRPCRouter({
       });
 
       if (!unlockable) {
-        throw new TRPCError({ code: "NOT_FOUND", message: "Unlockable not found" });
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Unlockable not found",
+        });
       }
 
       if (!unlockable.isActive) {
-        throw new TRPCError({ code: "BAD_REQUEST", message: "Unlockable is not available" });
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "Unlockable is not available",
+        });
       }
 
       if (ctx.user.totalPoints < unlockable.pointsRequired) {
-        throw new TRPCError({ code: "BAD_REQUEST", message: "Insufficient points" });
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "Insufficient points",
+        });
       }
 
       // Check if already unlocked
@@ -234,10 +259,12 @@ export const gamificationRouter = createTRPCRouter({
 
   // Get points history
   getPointsHistory: protectedProcedure
-    .input(z.object({
-      limit: z.number().min(1).max(100).default(20),
-      cursor: z.string().nullish(),
-    }))
+    .input(
+      z.object({
+        limit: z.number().min(1).max(100).default(20),
+        cursor: z.string().nullish(),
+      }),
+    )
     .query(async ({ ctx, input }) => {
       const logs = await ctx.db.pointsLog.findMany({
         where: { userId: ctx.user.id },
@@ -260,10 +287,12 @@ export const gamificationRouter = createTRPCRouter({
 
   // Get notifications
   getNotifications: protectedProcedure
-    .input(z.object({
-      limit: z.number().min(1).max(50).default(10),
-      unreadOnly: z.boolean().default(false),
-    }))
+    .input(
+      z.object({
+        limit: z.number().min(1).max(50).default(10),
+        unreadOnly: z.boolean().default(false),
+      }),
+    )
     .query(async ({ ctx, input }) => {
       return ctx.db.notification.findMany({
         where: {
@@ -293,4 +322,3 @@ export const gamificationRouter = createTRPCRouter({
     });
   }),
 });
-

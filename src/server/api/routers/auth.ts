@@ -1,5 +1,9 @@
 import { z } from "zod";
-import { createTRPCRouter, protectedProcedure, publicProcedure } from "~/server/api/trpc";
+import {
+  createTRPCRouter,
+  protectedProcedure,
+  publicProcedure,
+} from "~/server/api/trpc";
 import { TRPCError } from "@trpc/server";
 
 export const authRouter = createTRPCRouter({
@@ -10,12 +14,14 @@ export const authRouter = createTRPCRouter({
 
   // Update user profile
   updateProfile: protectedProcedure
-    .input(z.object({
-      displayName: z.string().min(1).optional(),
-      githubUsername: z.string().optional(),
-      githubRepoUrl: z.string().url().optional(),
-      currentBloomLevel: z.number().min(1).max(6).optional(),
-    }))
+    .input(
+      z.object({
+        displayName: z.string().min(1).optional(),
+        githubUsername: z.string().optional(),
+        githubRepoUrl: z.string().url().optional(),
+        currentBloomLevel: z.number().min(1).max(6).optional(),
+      }),
+    )
     .mutation(async ({ ctx, input }) => {
       return ctx.db.user.update({
         where: { id: ctx.user.id },
@@ -25,11 +31,13 @@ export const authRouter = createTRPCRouter({
 
   // Complete onboarding
   completeOnboarding: protectedProcedure
-    .input(z.object({
-      displayName: z.string().min(1).optional(),
-      githubUsername: z.string().optional(),
-      githubRepoUrl: z.string().url().optional(),
-    }))
+    .input(
+      z.object({
+        displayName: z.string().min(1).optional(),
+        githubUsername: z.string().optional(),
+        githubRepoUrl: z.string().url().optional(),
+      }),
+    )
     .mutation(async ({ ctx, input }) => {
       return ctx.db.user.update({
         where: { id: ctx.user.id },
@@ -53,14 +61,14 @@ export const authRouter = createTRPCRouter({
 
     const now = new Date();
     const lastLogin = user.lastLoginAt;
-    
+
     let newStreak = user.loginStreak;
-    
+
     if (lastLogin) {
       const daysSinceLastLogin = Math.floor(
-        (now.getTime() - lastLogin.getTime()) / (1000 * 60 * 60 * 24)
+        (now.getTime() - lastLogin.getTime()) / (1000 * 60 * 60 * 24),
       );
-      
+
       if (daysSinceLastLogin === 1) {
         newStreak += 1;
       } else if (daysSinceLastLogin > 1) {
@@ -79,4 +87,3 @@ export const authRouter = createTRPCRouter({
     });
   }),
 });
-

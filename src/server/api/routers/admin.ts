@@ -1,33 +1,38 @@
 import { z } from "zod";
 import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
 import { TRPCError } from "@trpc/server";
-import { 
-  generateCampaignContent, 
-  generateMilestoneObjective, 
+import {
+  generateCampaignContent,
+  generateMilestoneObjective,
   generateExternalResources,
-  generateQuizQuestions 
+  generateQuizQuestions,
 } from "~/lib/openai";
 
 export const adminRouter = createTRPCRouter({
   // Create campaign with AI assistance
   createCampaignWithAI: protectedProcedure
-    .input(z.object({
-      topic: z.string().min(1),
-      description: z.string().min(1),
-      targetAudience: z.string().optional(),
-      startingBloomLevel: z.number().min(1).max(6).default(1),
-      targetBloomLevel: z.number().min(1).max(6).default(6),
-      focusAreas: z.array(z.string()).default([]),
-      resourceTypes: z.array(z.string()).default([]),
-      excludedSources: z.array(z.string()).default([]),
-      tone: z.string().optional(),
-      estimatedDuration: z.number().optional(),
-      challengeType: z.string().optional(),
-      teamChallengeIdeas: z.string().optional(),
-    }))
+    .input(
+      z.object({
+        topic: z.string().min(1),
+        description: z.string().min(1),
+        targetAudience: z.string().optional(),
+        startingBloomLevel: z.number().min(1).max(6).default(1),
+        targetBloomLevel: z.number().min(1).max(6).default(6),
+        focusAreas: z.array(z.string()).default([]),
+        resourceTypes: z.array(z.string()).default([]),
+        excludedSources: z.array(z.string()).default([]),
+        tone: z.string().optional(),
+        estimatedDuration: z.number().optional(),
+        challengeType: z.string().optional(),
+        teamChallengeIdeas: z.string().optional(),
+      }),
+    )
     .mutation(async ({ ctx, input }) => {
       if (!ctx.user.isAdmin) {
-        throw new TRPCError({ code: "FORBIDDEN", message: "Admin access required" });
+        throw new TRPCError({
+          code: "FORBIDDEN",
+          message: "Admin access required",
+        });
       }
 
       try {
@@ -36,8 +41,8 @@ export const adminRouter = createTRPCRouter({
 
 Target audience: ${input.targetAudience || "General learners"}
 Bloom's Taxonomy levels: ${input.startingBloomLevel} to ${input.targetBloomLevel}
-Focus areas: ${input.focusAreas.join(', ') || "Core concepts"}
-Resource types: ${input.resourceTypes.join(', ') || "Mixed"}
+Focus areas: ${input.focusAreas.join(", ") || "Core concepts"}
+Resource types: ${input.resourceTypes.join(", ") || "Mixed"}
 Tone: ${input.tone || "Engaging and educational"}
 Estimated duration: ${input.estimatedDuration || "Self-paced"} days
 
@@ -67,16 +72,20 @@ Create a detailed campaign structure with milestones, objectives, and learning p
 
         // Generate milestones for each Bloom's level
         const milestones = [];
-        for (let level = input.startingBloomLevel; level <= input.targetBloomLevel; level++) {
+        for (
+          let level = input.startingBloomLevel;
+          level <= input.targetBloomLevel;
+          level++
+        ) {
           const objectiveData = await generateMilestoneObjective(
             input.topic,
             level,
-            input.focusAreas
+            input.focusAreas,
           );
 
           const resourcesData = await generateExternalResources(
             input.topic,
-            input.resourceTypes
+            input.resourceTypes,
           );
 
           const milestone = await ctx.db.milestone.create({
@@ -92,7 +101,7 @@ Create a detailed campaign structure with milestones, objectives, and learning p
 
           // Generate quiz for this milestone
           const quizData = await generateQuizQuestions(input.topic, level);
-          
+
           await ctx.db.quiz.create({
             data: {
               milestoneId: milestone.id,
@@ -113,24 +122,33 @@ Create a detailed campaign structure with milestones, objectives, and learning p
         };
       } catch (error) {
         console.error("Error creating campaign with AI:", error);
-        throw new TRPCError({ 
-          code: "INTERNAL_SERVER_ERROR", 
-          message: "Failed to create campaign with AI assistance" 
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to create campaign with AI assistance",
         });
       }
     }),
 
   // Generate additional content for existing campaign
   generateCampaignContent: protectedProcedure
-    .input(z.object({
-      campaignId: z.string(),
-      contentType: z.enum(["milestone_objective", "external_resources", "quiz_questions"]),
-      milestoneId: z.string().optional(),
-      bloomLevel: z.number().min(1).max(6).optional(),
-    }))
+    .input(
+      z.object({
+        campaignId: z.string(),
+        contentType: z.enum([
+          "milestone_objective",
+          "external_resources",
+          "quiz_questions",
+        ]),
+        milestoneId: z.string().optional(),
+        bloomLevel: z.number().min(1).max(6).optional(),
+      }),
+    )
     .mutation(async ({ ctx, input }) => {
       if (!ctx.user.isAdmin) {
-        throw new TRPCError({ code: "FORBIDDEN", message: "Admin access required" });
+        throw new TRPCError({
+          code: "FORBIDDEN",
+          message: "Admin access required",
+        });
       }
 
       const campaign = await ctx.db.campaign.findUnique({
@@ -138,34 +156,56 @@ Create a detailed campaign structure with milestones, objectives, and learning p
       });
 
       if (!campaign) {
-        throw new TRPCError({ code: "NOT_FOUND", message: "Campaign not found" });
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Campaign not found",
+        });
       }
 
       try {
         switch (input.contentType) {
           case "milestone_objective":
             if (!input.bloomLevel) {
-              throw new TRPCError({ code: "BAD_REQUEST", message: "Bloom level required for objective generation" });
+              throw new TRPCError({
+                code: "BAD_REQUEST",
+                message: "Bloom level required for objective generation",
+              });
             }
-            return await generateMilestoneObjective(campaign.topic, input.bloomLevel, campaign.focusAreas);
+            return await generateMilestoneObjective(
+              campaign.topic,
+              input.bloomLevel,
+              campaign.focusAreas,
+            );
 
           case "external_resources":
-            return await generateExternalResources(campaign.topic, campaign.resourceTypes);
+            return await generateExternalResources(
+              campaign.topic,
+              campaign.resourceTypes,
+            );
 
           case "quiz_questions":
             if (!input.bloomLevel) {
-              throw new TRPCError({ code: "BAD_REQUEST", message: "Bloom level required for quiz generation" });
+              throw new TRPCError({
+                code: "BAD_REQUEST",
+                message: "Bloom level required for quiz generation",
+              });
             }
-            return await generateQuizQuestions(campaign.topic, input.bloomLevel);
+            return await generateQuizQuestions(
+              campaign.topic,
+              input.bloomLevel,
+            );
 
           default:
-            throw new TRPCError({ code: "BAD_REQUEST", message: "Invalid content type" });
+            throw new TRPCError({
+              code: "BAD_REQUEST",
+              message: "Invalid content type",
+            });
         }
       } catch (error) {
         console.error("Error generating content:", error);
-        throw new TRPCError({ 
-          code: "INTERNAL_SERVER_ERROR", 
-          message: "Failed to generate content" 
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to generate content",
         });
       }
     }),
@@ -173,7 +213,10 @@ Create a detailed campaign structure with milestones, objectives, and learning p
   // Get admin dashboard stats
   getAdminStats: protectedProcedure.query(async ({ ctx }) => {
     if (!ctx.user.isAdmin) {
-      throw new TRPCError({ code: "FORBIDDEN", message: "Admin access required" });
+      throw new TRPCError({
+        code: "FORBIDDEN",
+        message: "Admin access required",
+      });
     }
 
     const [
