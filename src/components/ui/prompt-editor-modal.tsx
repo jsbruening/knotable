@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Dialog,
   DialogContent,
@@ -47,6 +47,12 @@ export function PromptEditorModal({
 }: PromptEditorModalProps) {
   const [editedPrompt, setEditedPrompt] = useState(prompt);
   const [hasChanges, setHasChanges] = useState(false);
+
+  // Update editedPrompt when prompt prop changes
+  useEffect(() => {
+    setEditedPrompt(prompt);
+    setHasChanges(false);
+  }, [prompt]);
 
   const handlePromptChange = (value: string) => {
     setEditedPrompt(value);
