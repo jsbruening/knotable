@@ -88,7 +88,7 @@ export function PromptEditorModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-h-[85vh] max-w-6xl overflow-hidden bg-app-gradient border-white/20">
+      <DialogContent className="max-h-[75vh] max-w-6xl overflow-hidden bg-app-gradient border-white/20">
         <DialogHeader>
           <DialogTitle className="flex items-center text-white">
             <Edit3 className="mr-2 h-5 w-5 text-blue-400" />
@@ -129,23 +129,23 @@ export function PromptEditorModal({
               id="prompt-editor"
               value={editedPrompt}
               onChange={(e) => handlePromptChange(e.target.value)}
-              className="h-[400px] resize-none border-white/20 bg-white/10 font-mono text-sm text-white placeholder:text-white/50 overflow-y-auto"
+              className="h-[300px] resize-none border-white/20 bg-white/10 font-mono text-sm text-white placeholder:text-white/50 overflow-y-auto"
               placeholder="Enter your AI prompt here..."
             />
           </div>
 
           {/* Tips Card */}
           <Card className="border-blue-400/30 bg-blue-500/10">
-            <CardHeader>
+            <CardHeader className="pb-2">
               <CardTitle className="flex items-center text-sm text-white">
                 <Brain className="mr-2 h-4 w-4 text-blue-400" />
                 Prompt Tips
               </CardTitle>
             </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 gap-4 text-xs text-white/80 md:grid-cols-2">
+            <CardContent className="pt-0">
+              <div className="grid grid-cols-1 gap-3 text-xs text-white/80 md:grid-cols-2">
                 <div>
-                  <h4 className="mb-2 font-semibold text-white">
+                  <h4 className="mb-1 font-semibold text-white">
                     For Better Results:
                   </h4>
                   <ul className="space-y-1">
@@ -156,7 +156,7 @@ export function PromptEditorModal({
                   </ul>
                 </div>
                 <div>
-                  <h4 className="mb-2 font-semibold text-white">Avoid:</h4>
+                  <h4 className="mb-1 font-semibold text-white">Avoid:</h4>
                   <ul className="space-y-1">
                     <li>• Vague or unclear instructions</li>
                     <li>• Contradictory requirements</li>
