@@ -52,6 +52,15 @@ export default function OnboardingPage() {
     }
   };
 
+  const handleSkipOnboarding = async () => {
+    try {
+      await api.auth.completeOnboarding.mutate({});
+      router.replace("/dashboard");
+    } catch (error) {
+      console.error("Failed to skip onboarding:", error);
+    }
+  };
+
   if (!user) {
     return (
       <div className="min-h-screen bg-app-gradient flex items-center justify-center">
@@ -92,6 +101,16 @@ export default function OnboardingPage() {
             <p className="mb-6 text-lg text-white/80">
               Let's get you set up for your learning journey
             </p>
+            
+            {/* Skip Onboarding Button */}
+            <div className="mb-4">
+              <button
+                onClick={handleSkipOnboarding}
+                className="text-sm text-white/60 hover:text-white/80 underline"
+              >
+                Skip onboarding and go to dashboard
+              </button>
+            </div>
 
             {/* Progress */}
             <div className="mx-auto mb-8 max-w-md">
