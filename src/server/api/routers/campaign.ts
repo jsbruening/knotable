@@ -651,14 +651,14 @@ export const campaignRouter = createTRPCRouter({
           // Fallback to mock data if parsing fails - create multiple milestones
           const milestoneCount = Math.max(
             3,
-            mockCampaign.targetBloomLevel - mockCampaign.startingBloomLevel + 1,
+            campaignData.targetBloomLevel - campaignData.startingBloomLevel + 1,
           );
           const milestones = [];
 
           for (let i = 0; i < milestoneCount; i++) {
             const currentLevel = Math.min(
-              mockCampaign.startingBloomLevel + i,
-              mockCampaign.targetBloomLevel,
+              campaignData.startingBloomLevel + i,
+              campaignData.targetBloomLevel,
             );
             const levelNames = [
               "",
@@ -672,26 +672,26 @@ export const campaignRouter = createTRPCRouter({
 
             milestones.push({
               bloomLevel: currentLevel,
-              title: `${levelNames[currentLevel]} Level: ${mockCampaign.topic} ${i + 1}`,
-              objective: `Learn to ${levelNames[currentLevel]?.toLowerCase() || "understand"} ${mockCampaign.topic} concepts at level ${currentLevel}`,
+              title: `${levelNames[currentLevel]} Level: ${campaignData.topic} ${i + 1}`,
+              objective: `Learn to ${levelNames[currentLevel]?.toLowerCase() || "understand"} ${campaignData.topic} concepts at level ${currentLevel}`,
               resources: [
-                `https://example.com/${mockCampaign.topic}-level-${currentLevel}`,
-                `https://youtube.com/watch?v=${mockCampaign.topic}-${levelNames[currentLevel]?.toLowerCase() || "understand"}`,
-                `https://docs.example.com/${mockCampaign.topic}/level-${currentLevel}`,
+                `https://example.com/${campaignData.topic}-level-${currentLevel}`,
+                `https://youtube.com/watch?v=${campaignData.topic}-${levelNames[currentLevel]?.toLowerCase() || "understand"}`,
+                `https://docs.example.com/${campaignData.topic}/level-${currentLevel}`,
               ],
               estimatedTime: `${2 + i} hours`,
               lessons: [
                 {
-                  title: `Lesson ${i + 1}.1: Introduction to ${mockCampaign.topic}`,
-                  objective: `Understand basic concepts of ${mockCampaign.topic}`,
+                  title: `Lesson ${i + 1}.1: Introduction to ${campaignData.topic}`,
+                  objective: `Understand basic concepts of ${campaignData.topic}`,
                   resources: [
-                    `https://example.com/${mockCampaign.topic}-intro`,
-                    `https://youtube.com/watch?v=${mockCampaign.topic}-basics`,
+                    `https://example.com/${campaignData.topic}-intro`,
+                    `https://youtube.com/watch?v=${campaignData.topic}-basics`,
                   ],
                   estimatedTime: "1-2 hours",
                   assessmentQuestions: [
                     {
-                      question: `What is the primary purpose of ${mockCampaign.topic}?`,
+                      question: `What is the primary purpose of ${campaignData.topic}?`,
                       options: ["Option A", "Option B", "Option C", "Option D"],
                       correctAnswer: "A",
                       explanation:
@@ -701,15 +701,15 @@ export const campaignRouter = createTRPCRouter({
                 },
                 {
                   title: `Sub-milestone ${i + 1}.2: Practical Application`,
-                  objective: `Apply ${mockCampaign.topic} concepts in practice`,
+                  objective: `Apply ${campaignData.topic} concepts in practice`,
                   resources: [
-                    `https://example.com/${mockCampaign.topic}-practice`,
-                    `https://youtube.com/watch?v=${mockCampaign.topic}-hands-on`,
+                    `https://example.com/${campaignData.topic}-practice`,
+                    `https://youtube.com/watch?v=${campaignData.topic}-hands-on`,
                   ],
                   estimatedTime: "2-3 hours",
                   assessmentQuestions: [
                     {
-                      question: `How would you implement ${mockCampaign.topic} in a real project?`,
+                      question: `How would you implement ${campaignData.topic} in a real project?`,
                       options: ["Option A", "Option B", "Option C", "Option D"],
                       correctAnswer: "B",
                       explanation:
@@ -763,26 +763,26 @@ export const campaignRouter = createTRPCRouter({
 
           milestones.push({
             bloomLevel: currentLevel,
-            title: `${levelNames[currentLevel]} Level: ${mockCampaign.topic} ${i + 1}`,
-            objective: `Learn to ${levelNames[currentLevel]?.toLowerCase() || "understand"} ${mockCampaign.topic} concepts at level ${currentLevel}`,
+            title: `${levelNames[currentLevel]} Level: ${campaignData.topic} ${i + 1}`,
+            objective: `Learn to ${levelNames[currentLevel]?.toLowerCase() || "understand"} ${campaignData.topic} concepts at level ${currentLevel}`,
             resources: [
-              `https://example.com/${mockCampaign.topic}-level-${currentLevel}`,
-              `https://youtube.com/watch?v=${mockCampaign.topic}-${levelNames[currentLevel]?.toLowerCase() || "understand"}`,
-              `https://docs.example.com/${mockCampaign.topic}/level-${currentLevel}`,
+              `https://example.com/${campaignData.topic}-level-${currentLevel}`,
+              `https://youtube.com/watch?v=${campaignData.topic}-${levelNames[currentLevel]?.toLowerCase() || "understand"}`,
+              `https://docs.example.com/${campaignData.topic}/level-${currentLevel}`,
             ],
             estimatedTime: `${2 + i} hours`,
             lessons: [
               {
-                title: `Lesson ${i + 1}.1: Introduction to ${mockCampaign.topic}`,
-                objective: `Understand basic concepts of ${mockCampaign.topic}`,
+                title: `Lesson ${i + 1}.1: Introduction to ${campaignData.topic}`,
+                objective: `Understand basic concepts of ${campaignData.topic}`,
                 resources: [
-                  `https://example.com/${mockCampaign.topic}-intro`,
-                  `https://youtube.com/watch?v=${mockCampaign.topic}-basics`,
+                  `https://example.com/${campaignData.topic}-intro`,
+                  `https://youtube.com/watch?v=${campaignData.topic}-basics`,
                 ],
                 estimatedTime: "1-2 hours",
                 assessmentQuestions: [
                   {
-                    question: `What is the primary purpose of ${mockCampaign.topic}?`,
+                    question: `What is the primary purpose of ${campaignData.topic}?`,
                     options: ["Option A", "Option B", "Option C", "Option D"],
                     correctAnswer: "A",
                     explanation:
@@ -792,15 +792,15 @@ export const campaignRouter = createTRPCRouter({
               },
               {
                 title: `Sub-milestone ${i + 1}.2: Practical Application`,
-                objective: `Apply ${mockCampaign.topic} concepts in practice`,
+                objective: `Apply ${campaignData.topic} concepts in practice`,
                 resources: [
-                  `https://example.com/${mockCampaign.topic}-practice`,
-                  `https://youtube.com/watch?v=${mockCampaign.topic}-hands-on`,
+                  `https://example.com/${campaignData.topic}-practice`,
+                  `https://youtube.com/watch?v=${campaignData.topic}-hands-on`,
                 ],
                 estimatedTime: "2-3 hours",
                 assessmentQuestions: [
                   {
-                    question: `How would you implement ${mockCampaign.topic} in a real project?`,
+                    question: `How would you implement ${campaignData.topic} in a real project?`,
                     options: ["Option A", "Option B", "Option C", "Option D"],
                     correctAnswer: "B",
                     explanation: "This shows practical application knowledge.",
