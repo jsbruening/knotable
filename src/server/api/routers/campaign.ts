@@ -71,10 +71,10 @@ RESPONSE FORMAT (must be valid JSON):
         "https://real-video-url.com"
       ],
       "estimatedTime": "X-Y hours",
-      "subMilestones": [
+      "lessons": [
         {
-          "title": "Specific sub-milestone title",
-          "objective": "Clear learning objective for this sub-milestone",
+          "title": "Specific lesson title",
+          "objective": "Clear learning objective for this lesson",
           "resources": [
             "https://real-resource-url.com",
             "https://real-tutorial-url.com"
@@ -82,7 +82,7 @@ RESPONSE FORMAT (must be valid JSON):
           "estimatedTime": "1-2 hours",
           "assessmentQuestions": [
             {
-              "question": "Context-specific question for this sub-milestone",
+              "question": "Context-specific question for this lesson",
               "options": ["Option A", "Option B", "Option C", "Option D"],
               "correctAnswer": "A",
               "explanation": "Detailed explanation of why this answer is correct"
@@ -643,9 +643,9 @@ export const campaignRouter = createTRPCRouter({
                 `https://docs.example.com/${mockCampaign.topic}/level-${currentLevel}`,
               ],
               estimatedTime: `${2 + i} hours`,
-              subMilestones: [
+              lessons: [
                 {
-                  title: `Sub-milestone ${i + 1}.1: Introduction to ${mockCampaign.topic}`,
+                  title: `Lesson ${i + 1}.1: Introduction to ${mockCampaign.topic}`,
                   objective: `Understand basic concepts of ${mockCampaign.topic}`,
                   resources: [
                     `https://example.com/${mockCampaign.topic}-intro`,
@@ -734,9 +734,9 @@ export const campaignRouter = createTRPCRouter({
               `https://docs.example.com/${mockCampaign.topic}/level-${currentLevel}`,
             ],
             estimatedTime: `${2 + i} hours`,
-            subMilestones: [
+            lessons: [
               {
-                title: `Sub-milestone ${i + 1}.1: Introduction to ${mockCampaign.topic}`,
+                title: `Lesson ${i + 1}.1: Introduction to ${mockCampaign.topic}`,
                 objective: `Understand basic concepts of ${mockCampaign.topic}`,
                 resources: [
                   `https://example.com/${mockCampaign.topic}-intro`,
@@ -954,7 +954,7 @@ export const campaignRouter = createTRPCRouter({
             objective: z.string(),
             resources: z.array(z.string()),
             estimatedTime: z.string().optional(),
-            subMilestones: z
+            lessons: z
               .array(
                 z.object({
                   title: z.string(),
@@ -1020,18 +1020,18 @@ export const campaignRouter = createTRPCRouter({
               objective: milestone.objective,
               externalResources: milestone.resources,
               order: index + 1,
-              subMilestones: {
+              lessons: {
                 create:
-                  milestone.subMilestones?.map((subMilestone, subIndex) => ({
-                    title: subMilestone.title,
-                    objective: subMilestone.objective,
-                    externalResources: subMilestone.resources,
-                    estimatedTime: subMilestone.estimatedTime,
-                    order: subIndex + 1,
+                  milestone.lessons?.map((lesson, lessonIndex) => ({
+                    title: lesson.title,
+                    objective: lesson.objective,
+                    externalResources: lesson.resources,
+                    estimatedTime: lesson.estimatedTime,
+                    order: lessonIndex + 1,
                     quizzes: {
                       create:
-                        subMilestone.assessmentQuestions?.map((q) => ({
-                          title: `Quiz: ${subMilestone.title}`,
+                        lesson.assessmentQuestions?.map((q) => ({
+                          title: `Quiz: ${lesson.title}`,
                           questions: {
                             questions: [
                               {
@@ -1064,7 +1064,7 @@ export const campaignRouter = createTRPCRouter({
               },
             },
             include: {
-              subMilestones: {
+              lessons: {
                 include: {
                   quizzes: true,
                 },
