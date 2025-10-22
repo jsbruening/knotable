@@ -123,7 +123,7 @@ LEARNING PARAMETERS:
 - Prerequisites: ${aiParams.prerequisites || "None specified"}
 
 ADVANCED CONFIGURATION:
-- Resource Types: ${aiParams.resourceTypes?.join(", ") || "Mixed formats"}
+- Resource Types: ${aiParams.resourceTypes || "Mixed formats"}
 - Final Learning Outcome: ${aiParams.finalLearningOutcome || "Comprehensive understanding"}
 - Question Format: ${aiParams.questionFormat || "Multiple choice"}
 
@@ -210,101 +210,6 @@ Return ONLY a valid JSON object with this exact structure:
     return () => window.removeEventListener("wizard-next", handleNext);
   }, [isGenerating, generatedContent, nextStep]);
 
-  // Build the AI prompt for preview
-  const buildPrompt = () => {
-    const levelNames = [
-      "",
-      "Remember",
-      "Understand",
-      "Apply",
-      "Analyze",
-      "Evaluate",
-      "Create",
-    ];
-    return `
-You are an expert educational content creator specializing in Bloom's Taxonomy. Create a comprehensive learning campaign.
-
-CAMPAIGN DETAILS:
-- Title: "${campaignData.title}"
-- Topic: ${campaignData.topic}
-- Description: ${campaignData.description}
-- Target Audience: ${campaignData.targetAudience || "General learners"}
-- Starting Bloom Level: ${campaignData.startingBloomLevel} (${levelNames[campaignData.startingBloomLevel]})
-- Target Bloom Level: ${campaignData.targetBloomLevel} (${levelNames[campaignData.targetBloomLevel]})
-- Focus Areas: ${campaignData.focusAreas?.join(", ") || "None specified"}
-- Estimated Duration: ${campaignData.estimatedDuration || "Flexible"} days
-- Tone: ${campaignData.tone || "professional"}
-
-LEARNING PARAMETERS:
-- Learning Style: ${aiParams.learningStyle || "Mixed"}
-- Difficulty Preference: ${aiParams.difficultyPreference || "Balanced"}
-- Content Format: ${aiParams.contentFormat || "Mixed"}
-- Time Commitment: ${aiParams.timeCommitment || "Flexible"}
-- Prerequisites: ${aiParams.prerequisites || "None specified"}
-
-ADVANCED CONFIGURATION:
-- Resource Types: ${aiParams.resourceTypes || "Mixed"}
-- Final Learning Outcome: ${aiParams.finalOutcome || "Build a polished app"}
-- Question Format: ${aiParams.questionFormat || "Nested"}
-
-TASK:
-Create a structured learning path with ${Math.max(3, campaignData.targetBloomLevel - campaignData.startingBloomLevel + 1)} milestones that progress through Bloom's Taxonomy levels ${campaignData.startingBloomLevel} to ${campaignData.targetBloomLevel}.
-
-For each milestone, provide:
-1. A clear, engaging title
-2. A specific learning objective appropriate for the Bloom level
-3. 3-5 high-quality external resources (real URLs when possible)
-4. Estimated time to complete
-
-Also create 2-3 assessment questions per milestone to verify understanding.
-
-RESPONSE FORMAT (must be valid JSON):
-{
-  "milestones": [
-    {
-      "bloomLevel": 1,
-      "title": "Engaging milestone title",
-      "objective": "Specific, measurable learning objective",
-      "resources": [
-        "https://real-resource-url.com",
-        "https://another-resource.com"
-      ],
-      "estimatedTime": "2-3 hours"
-    }
-  ],
-  "assessmentQuestions": [
-    {
-      "milestoneIndex": 0,
-      "question": "Clear, well-written question",
-      "options": ["Option A", "Option B", "Option C", "Option D"],
-      "correctAnswer": "A",
-      "explanation": "Detailed explanation of why this answer is correct"
-    }
-  ]
-}
-
-IMPORTANT: 
-- Use real, high-quality educational resources when possible
-- Make objectives specific and measurable
-- Ensure questions test the appropriate Bloom level
-- Keep the JSON structure exactly as specified
-- Make content engaging and practical
-- Each milestone should build on the previous one
-
-RESOURCE GUIDANCE:
-${aiParams.resourceTypes === "docs-first" ? "- Prioritize official documentation and authoritative blog posts\n- Minimize YouTube videos" : ""}
-${aiParams.resourceTypes === "video-heavy" ? "- Emphasize YouTube tutorials and video courses\n- Include hands-on video demonstrations" : ""}
-${aiParams.resourceTypes === "free-only" ? "- Only include free, open-access resources\n- No paid courses or signup-required content" : ""}
-${aiParams.resourceTypes === "mixed" ? "- Mix documentation, videos, tutorials, and interactive content" : ""}
-
-FINAL OUTCOME GUIDANCE:
-${aiParams.finalOutcome === "build-app" ? "- Culminate in a production-ready deployed application\n- Include testing, performance optimization, and documentation" : ""}
-${aiParams.finalOutcome === "build-teach" ? "- Build a polished app AND create teaching materials\n- Include documentation, tutorials, or recorded walkthroughs" : ""}
-${aiParams.finalOutcome === "architect-scale" ? "- Focus on scalable architecture and design patterns\n- Produce architecture plans and high-level system design" : ""}
-${aiParams.finalOutcome === "open-source" ? "- End with contributing to existing open source projects\n- Include PR creation, documentation, and community contribution" : ""}
-${aiParams.finalOutcome === "hybrid" ? "- Combine multiple approaches based on the topic" : ""}
-`;
-  };
 
   const handleGenerateContent = async () => {
     try {
