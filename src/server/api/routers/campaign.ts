@@ -11,6 +11,16 @@ import { discoverResourcesForMilestone, discoverResourcesForLesson } from "~/lib
 
 // Helper function to build AI prompt for campaign generation
 function buildCampaignPrompt(campaign: any, params: any): string {
+  const levelNames = [
+    "",
+    "Remember",
+    "Understand", 
+    "Apply",
+    "Analyze",
+    "Evaluate",
+    "Create",
+  ];
+  
   return `
 You are an expert educational content creator specializing in Bloom's Taxonomy. Create a comprehensive learning campaign.
 
@@ -19,52 +29,67 @@ CAMPAIGN DETAILS:
 - Topic: ${campaign.topic}
 - Description: ${campaign.description}
 - Target Audience: ${campaign.targetAudience || "General learners"}
-- Starting Bloom Level: ${campaign.startingBloomLevel} (${getBloomLevelName(campaign.startingBloomLevel)})
-- Target Bloom Level: ${campaign.targetBloomLevel} (${getBloomLevelName(campaign.targetBloomLevel)})
+- Starting Bloom Level: ${campaign.startingBloomLevel} (${levelNames[campaign.startingBloomLevel]})
+- Target Bloom Level: ${campaign.targetBloomLevel} (${levelNames[campaign.targetBloomLevel]})
 - Focus Areas: ${campaign.focusAreas.join(", ")}
-- Estimated Duration: ${campaign.estimatedDuration || "Flexible"} days
-- Tone: ${campaign.tone || "professional"}
+- Estimated Duration: ${campaign.estimatedDuration || "Not specified"} days
+- Tone: ${campaign.tone || "Professional"}
 
 LEARNING PARAMETERS:
 - Learning Style: ${params.learningStyle || "Mixed"}
 - Difficulty Preference: ${params.difficultyPreference || "Balanced"}
 - Content Format: ${params.contentFormat || "Mixed"}
 - Time Commitment: ${params.timeCommitment || "Flexible"}
-- Prerequisites: ${params.prerequisites || "None specified"}
+- Prerequisites: ${params.prerequisites || "Working knowledge of HTML, CSS, and modern JavaScript (including basic ES6+ features like arrow functions and let/const)"}
 
-TASK:
-Create a structured learning path with ${Math.max(3, campaign.targetBloomLevel - campaign.startingBloomLevel + 1)} milestones that progress through Bloom's Taxonomy levels ${campaign.startingBloomLevel} to ${campaign.targetBloomLevel}.
+ADVANCED CONFIGURATION:
+- Resource Types: ${params.resourceTypes || "Mixed formats"}
+- Final Learning Outcome: ${params.finalLearningOutcome || "Comprehensive understanding"}
+- Question Format: ${params.questionFormat || "Multiple choice"}
 
-For each milestone, provide:
-1. A clear, engaging title that reflects the Bloom level
-2. A specific, measurable learning objective appropriate for the Bloom level
-3. 3-5 high-quality external resources (use REAL URLs when possible - official docs, MDN, FreeCodeCamp, YouTube tutorials, etc.)
-4. Estimated time to complete
-5. 3-5 sub-milestones that break down the main milestone into smaller, manageable learning units
-6. 2-3 assessment questions that test understanding at the appropriate Bloom level
+${campaign.topic.toLowerCase().includes('react') || campaign.topic.toLowerCase().includes('javascript') || campaign.topic.toLowerCase().includes('programming') || campaign.topic.toLowerCase().includes('web development') || campaign.topic.toLowerCase().includes('frontend') || campaign.topic.toLowerCase().includes('coding') ? `CODE STANDARDS:
+- Syntax: All explanations and examples must exclusively use modern Functional Components and Hooks syntax
+- Language: Use modern JavaScript (ES6+) for all code, defaulting to JSX
+- TypeScript: If TypeScript is used, it should be introduced as a separate, clearly marked lesson/topic
+- Prohibited: Class components and deprecated lifecycles are strictly forbidden` : ''}
 
-Each sub-milestone should have:
-- A specific, focused title
-- A clear learning objective
-- 2-3 high-quality external resources
-- Estimated time to complete (typically 1-3 hours)
-- 1-2 assessment questions appropriate for the sub-milestone level
+DOMAIN STANDARDS:
+- Use current, industry-standard practices for the specified topic
+- Avoid outdated or deprecated methods/approaches
+- Prioritize official documentation and authoritative sources
+- Ensure all content reflects modern best practices
 
-BLOOM'S TAXONOMY GUIDANCE:
-- Level 1 (Remember): Recall facts, terms, basic concepts
-- Level 2 (Understand): Explain ideas, compare, summarize
-- Level 3 (Apply): Use knowledge in new situations, solve problems
-- Level 4 (Analyze): Break down complex topics, find patterns
-- Level 5 (Evaluate): Make judgments, defend decisions, critique
-- Level 6 (Create): Design, construct, produce original work
+STRUCTURE REQUIREMENTS:
+- Each milestone must contain 2-5 detailed lessons
+- Use whole hour increments for time estimates (e.g., "1-2 hours", "3-4 hours")
+- Progress sequentially through Bloom levels ${campaign.startingBloomLevel} to ${campaign.targetBloomLevel}
+- Each milestone must strictly correspond to one Bloom's Taxonomy level
 
-RESPONSE FORMAT (must be valid JSON):
+IMPORTANT:
+- Use real, high-quality educational resources when possible
+- Make objectives specific and measurable
+- Ensure questions test the appropriate Bloom level
+- Keep the JSON structure exactly as specified
+- Make content engaging and practical
+- Each milestone should build on the previous one
+
+RESOURCE GUIDANCE:
+- Prioritize official documentation and industry leaders
+- If specific links are unavailable, use placeholder URLs with clear descriptions
+- Mix documentation, videos, tutorials, and interactive content
+- Focus on authoritative sources and current materials
+
+FINAL OUTCOME GUIDANCE:
+- Culminate in a production-ready deployed application
+- Include testing, performance optimization, and documentation
+
+Return ONLY a valid JSON object with this exact structure:
 {
   "milestones": [
     {
       "bloomLevel": 1,
-      "title": "Specific, engaging milestone title",
-      "objective": "Specific, measurable learning objective appropriate for this Bloom level",
+      "title": "Milestone title",
+      "objective": "Clear learning objective",
       "resources": [
         "https://real-official-docs-url.com",
         "https://real-tutorial-url.com",
@@ -95,21 +120,15 @@ RESPONSE FORMAT (must be valid JSON):
           "question": "Context-specific question that tests this Bloom level",
           "options": ["Option A", "Option B", "Option C", "Option D"],
           "correctAnswer": "A",
-          "explanation": "Detailed explanation of why this answer is correct and what it demonstrates"
+          "explanation": "Detailed explanation of why this answer is correct"
         }
       ]
     }
   ]
 }
 
-IMPORTANT: 
-- Use REAL, high-quality educational resources (official docs, MDN, FreeCodeCamp, YouTube, etc.)
-- Make objectives specific and measurable for the Bloom level
-- Ensure questions test the appropriate Bloom level with real-world scenarios
-- Keep the JSON structure exactly as specified
-- Make content engaging, practical, and progressive
-- Each milestone should build on the previous one
-`;
+TASK:
+Create a comprehensive learning campaign with exactly ${campaign.targetBloomLevel - campaign.startingBloomLevel + 1} milestones. Each milestone must strictly correspond to one Bloom's Taxonomy level, progressing sequentially from Level ${campaign.startingBloomLevel} (${levelNames[campaign.startingBloomLevel]}) to Level ${campaign.targetBloomLevel} (${levelNames[campaign.targetBloomLevel]}).`;
 }
 
 function getBloomLevelName(level: number): string {
@@ -596,6 +615,11 @@ export const campaignRouter = createTRPCRouter({
       try {
         // Call Gemini API
         const aiResponse = await generateCampaignContent(prompt);
+        
+        // Log the raw response for debugging
+        console.log("=== RAW GEMINI RESPONSE ===");
+        console.log(aiResponse);
+        console.log("=== END RAW RESPONSE ===");
 
         // Parse the AI response
         let generatedContent;
