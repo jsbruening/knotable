@@ -94,6 +94,19 @@ export function GlobalNav() {
                   </Button>
                 </Link>
               )}
+
+              {/* Admin Settings Button */}
+              {currentUser?.isAdmin && (
+                <Link href="/admin/settings">
+                  <Button
+                    variant="ghost"
+                    className="ml-2 text-white/80 hover:bg-white/10 hover:text-white"
+                  >
+                    <Settings className="mr-2 h-4 w-4" />
+                    Admin
+                  </Button>
+                </Link>
+              )}
             </div>
 
             {/* User Menu */}
@@ -206,6 +219,22 @@ export function GlobalNav() {
                     >
                       <Plus className="mr-3 h-4 w-4" />
                       Create Campaign
+                    </Button>
+                  </Link>
+                )}
+
+                {/* Admin Settings Button */}
+                {currentUser?.isAdmin && (
+                  <Link
+                    href="/admin/settings"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                  >
+                    <Button
+                      variant="ghost"
+                      className="w-full justify-start text-white/80 hover:bg-white/10 hover:text-white"
+                    >
+                      <Settings className="mr-3 h-4 w-4" />
+                      Admin Settings
                     </Button>
                   </Link>
                 )}
