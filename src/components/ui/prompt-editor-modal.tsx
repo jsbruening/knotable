@@ -23,7 +23,6 @@ import {
   Edit3,
   Sparkles,
   FileText,
-  Brain,
   CheckCircle,
   RotateCcw,
   Copy,
@@ -167,39 +166,6 @@ export function PromptEditorModal({
             />
           </div>
 
-          {/* Tips Card */}
-          <Card className="border-blue-400/30 bg-blue-500/10">
-            <CardHeader className="pb-2">
-              <CardTitle className="flex items-center text-sm text-white">
-                <Brain className="mr-2 h-4 w-4 text-blue-400" />
-                Prompt Tips
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="pt-0">
-              <div className="grid grid-cols-1 gap-3 text-xs text-white/80 md:grid-cols-2">
-                <div>
-                  <h4 className="mb-1 font-semibold text-white">
-                    For Better Results:
-                  </h4>
-                  <ul className="space-y-1">
-                    <li>• Be specific about learning objectives</li>
-                    <li>• Include target audience details</li>
-                    <li>• Specify difficulty levels clearly</li>
-                    <li>• Mention preferred content formats</li>
-                  </ul>
-                </div>
-                <div>
-                  <h4 className="mb-1 font-semibold text-white">Avoid:</h4>
-                  <ul className="space-y-1">
-                    <li>• Vague or unclear instructions</li>
-                    <li>• Contradictory requirements</li>
-                    <li>• Overly complex prompts</li>
-                    <li>• Missing context information</li>
-                  </ul>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
 
           {/* Action Buttons */}
           <div className="flex items-center justify-between border-t border-white/20 pt-4">
