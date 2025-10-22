@@ -5,6 +5,7 @@ import {
   publicProcedure,
 } from "~/server/api/trpc";
 import { TRPCError } from "@trpc/server";
+import fetch from "node-fetch";
 import { generateCampaignContent } from "~/lib/gemini";
 
 // Helper function to build AI prompt for campaign generation
@@ -124,6 +125,91 @@ function getBloomLevelName(level: number): string {
 }
 
 export const campaignRouter = createTRPCRouter({
+  // Validate and upsert resources for a milestone from existing externalResources
+  refreshResources: protectedProcedure
+    .input(
+      z.object({
+        milestoneId: z.string(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      const milestone = await ctx.db.milestone.findUnique({
+        where: { id: input.milestoneId },
+      });
+
+      if (!milestone) {
+        throw new TRPCError({ code: "NOT_FOUND", message: "Milestone not found" });
+      }
+
+      const urls: string[] = milestone.externalResources || [];
+      const results: { url: string; ok: boolean; type: string; title: string; provider?: string }[] = [];
+
+      for (const url of urls) {
+        try {
+          const res = await fetch(url, { method: "HEAD", redirect: "follow", timeout: 5000 as any });
+          const ok = res.status >= 200 && res.status < 400;
+          const contentType = (res.headers.get("content-type") || "").toLowerCase();
+          const type = contentType.startsWith("video/")
+            ? "video"
+            : contentType.includes("pdf")
+            ? "pdf"
+            : "article";
+
+          if (!ok) {
+            results.push({ url, ok: false, type, title: url });
+            continue;
+          }
+
+          // Fallback title from URL
+          const { hostname, pathname } = new URL(url);
+          const last = decodeURIComponent(pathname.split("/").filter(Boolean).pop() || hostname)
+            .replace(/[-_]+/g, " ")
+            .replace(/\.[a-z0-9]+$/i, "");
+          const title = last || hostname;
+
+          await ctx.db.resource.upsert({
+            where: {
+              milestoneId_url: { milestoneId: milestone.id, url },
+            },
+            update: {
+              type,
+              title,
+              provider: hostname.replace(/^www\./, ""),
+              isAlive: true,
+              lastCheckedAt: new Date(),
+            },
+            create: {
+              milestoneId: milestone.id,
+              url,
+              type,
+              title,
+              provider: hostname.replace(/^www\./, ""),
+              isAlive: true,
+              lastCheckedAt: new Date(),
+            },
+          });
+
+          results.push({ url, ok: true, type, title, provider: hostname });
+        } catch {
+          await ctx.db.resource.upsert({
+            where: { milestoneId_url: { milestoneId: milestone.id, url } },
+            update: { isAlive: false, lastCheckedAt: new Date() },
+            create: {
+              milestoneId: milestone.id,
+              url,
+              type: "article",
+              title: url,
+              isAlive: false,
+              lastCheckedAt: new Date(),
+            },
+          });
+          results.push({ url, ok: false, type: "article", title: url });
+        }
+      }
+
+      const saved = await ctx.db.resource.findMany({ where: { milestoneId: milestone.id, isAlive: true } });
+      return { count: saved.length, results, resources: saved };
+    }),
   // Get all public campaigns
   getAll: publicProcedure
     .input(
@@ -1051,26 +1137,46 @@ export const campaignRouter = createTRPCRouter({
       const userId = ctx.user.id;
       const { campaignId, milestoneId } = input;
 
-      // Auto-enroll user in the campaign (upsert to handle race conditions)
-      const userCampaign = await ctx.db.userCampaign.upsert({
+      // Check if user is already enrolled, auto-enroll if not
+      const existingUserCampaign = await ctx.db.userCampaign.findUnique({
         where: {
           userId_campaignId: {
             userId,
             campaignId,
           },
         },
-        update: {
-          lastActiveAt: new Date(),
-        },
-        create: {
-          userId,
-          campaignId,
-          currentMilestone: 1,
-          completedMilestones: [],
-          joinedAt: new Date(),
-          lastActiveAt: new Date(),
-        },
       });
+
+      let userCampaign;
+      let isNewEnrollment = false;
+
+      if (existingUserCampaign) {
+        // User already enrolled, just update last active time
+        userCampaign = await ctx.db.userCampaign.update({
+          where: {
+            userId_campaignId: {
+              userId,
+              campaignId,
+            },
+          },
+          data: {
+            lastActiveAt: new Date(),
+          },
+        });
+      } else {
+        // New enrollment
+        isNewEnrollment = true;
+        userCampaign = await ctx.db.userCampaign.create({
+          data: {
+            userId,
+            campaignId,
+            currentMilestone: 1,
+            completedMilestones: [],
+            joinedAt: new Date(),
+            lastActiveAt: new Date(),
+          },
+        });
+      }
 
       // Check if milestone exists and belongs to campaign
       const milestone = await ctx.db.milestone.findFirst({
@@ -1078,6 +1184,7 @@ export const campaignRouter = createTRPCRouter({
           id: milestoneId,
           campaignId,
         },
+        include: { resources: true },
       });
 
       if (!milestone) {
@@ -1111,12 +1218,12 @@ export const campaignRouter = createTRPCRouter({
           isActive: true,
         },
         include: {
-          milestone: true,
+          milestone: { include: { resources: true } },
           campaign: true,
         },
       });
 
-      return learningSession;
+      return { ...learningSession, isNewEnrollment };
     }),
 
   updateLearningSession: protectedProcedure
@@ -1157,7 +1264,7 @@ export const campaignRouter = createTRPCRouter({
           ...(completedResources !== undefined && { completedResources }),
         },
         include: {
-          milestone: true,
+          milestone: { include: { resources: true } },
           campaign: true,
         },
       });
@@ -1210,7 +1317,7 @@ export const campaignRouter = createTRPCRouter({
           timeSpent,
         },
         include: {
-          milestone: true,
+          milestone: { include: { resources: true } },
           campaign: true,
         },
       });
@@ -1301,6 +1408,7 @@ export const campaignRouter = createTRPCRouter({
             include: {
               subMilestones: true,
               quizzes: true,
+              resources: true,
             },
           },
           campaign: true,

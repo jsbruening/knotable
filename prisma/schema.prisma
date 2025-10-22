@@ -110,6 +110,7 @@ model Milestone {
     subMilestones     SubMilestone[]
     quizzes           Quiz[]
     teamChallenges    TeamChallenge[]
+    resources         Resource[]
     learningSessions  LearningSession[]
 
     @@index([campaignId])
@@ -391,4 +392,23 @@ model ResourceProgress {
     @@index([sessionId])
     @@index([resourceUrl])
     @@index([isCompleted])
+}
+
+model Resource {
+    id            String    @id @default(cuid())
+    milestoneId   String
+    type          String // video | article | tool | pdf
+    title         String
+    url           String
+    provider      String?
+    lastCheckedAt DateTime?
+    isAlive       Boolean   @default(true)
+    createdAt     DateTime  @default(now())
+    updatedAt     DateTime  @updatedAt
+
+    milestone Milestone @relation(fields: [milestoneId], references: [id], onDelete: Cascade)
+
+    @@unique([milestoneId, url])
+    @@index([milestoneId])
+    @@index([isAlive])
 }
