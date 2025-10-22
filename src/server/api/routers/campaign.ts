@@ -281,7 +281,24 @@ export const campaignRouter = createTRPCRouter({
         });
       }
 
-      return campaign;
+      // Check if current user is enrolled (if authenticated)
+      let isUserEnrolled = false;
+      if (ctx.user) {
+        const userCampaign = await ctx.db.userCampaign.findUnique({
+          where: {
+            userId_campaignId: {
+              userId: ctx.user.id,
+              campaignId: input.id,
+            },
+          },
+        });
+        isUserEnrolled = !!userCampaign;
+      }
+
+      return {
+        ...campaign,
+        isUserEnrolled,
+      };
     }),
 
   // Join a campaign

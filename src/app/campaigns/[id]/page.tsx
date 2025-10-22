@@ -38,7 +38,13 @@ export default function CampaignDetailPage() {
   const { data: campaign, isLoading } = api.campaign.getById.useQuery({
     id: campaignId,
   });
-  const joinCampaignMutation = api.campaign.join.useMutation();
+  const utils = api.useUtils();
+  const joinCampaignMutation = api.campaign.join.useMutation({
+    onSuccess: () => {
+      // Invalidate the campaign query to refresh the enrollment status
+      utils.campaign.getById.invalidate({ id: campaignId });
+    },
+  });
   const deleteCampaignMutation = api.campaign.delete.useMutation();
 
   const handleJoinCampaign = async () => {
@@ -131,15 +137,24 @@ export default function CampaignDetailPage() {
                 <Trash2 className="mr-2 h-4 w-4" />
                 Delete
               </Button>
-              <Button
-                onClick={handleJoinCampaign}
-                disabled={joinCampaignMutation.isPending}
-                className="bg-green-600 hover:bg-green-700"
-              >
-                {joinCampaignMutation.isPending
-                  ? "Joining..."
-                  : "Join Campaign"}
-              </Button>
+              {!campaign.isUserEnrolled ? (
+                <Button
+                  onClick={handleJoinCampaign}
+                  disabled={joinCampaignMutation.isPending}
+                  className="bg-green-600 hover:bg-green-700"
+                >
+                  {joinCampaignMutation.isPending
+                    ? "Joining..."
+                    : "Join Campaign"}
+                </Button>
+              ) : (
+                <Button
+                  disabled
+                  className="bg-gray-600 cursor-not-allowed"
+                >
+                  Already Joined
+                </Button>
+              )}
             </div>
           </div>
         </div>
