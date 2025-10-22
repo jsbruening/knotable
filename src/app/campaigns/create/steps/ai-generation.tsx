@@ -192,8 +192,10 @@ Return ONLY a valid JSON object with this exact structure:
 
   // Initialize the prompt when component loads
   useEffect(() => {
+    console.log("useEffect triggered:", { aiPrompt, campaignData, aiParams });
     if (!aiPrompt) {
       const prompt = buildPrompt();
+      console.log("Generated prompt:", prompt);
       setAIPrompt(prompt);
     }
   }, [campaignData, aiParams, setAIPrompt, buildPrompt]);
@@ -283,7 +285,9 @@ Return ONLY a valid JSON object with this exact structure:
   };
 
   const handleOpenPromptEditor = () => {
+    console.log("Opening prompt editor, current aiPrompt:", aiPrompt);
     const prompt = buildPrompt();
+    console.log("Generated prompt in handleOpenPromptEditor:", prompt);
     setAIPrompt(prompt);
     setShowPromptEditor(true);
   };
