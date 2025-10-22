@@ -8,6 +8,7 @@ import {
   CardTitle,
 } from "~/components/ui/card";
 import { Progress } from "~/components/ui/progress";
+import { AwesomeProgressTracker } from "~/components/ui/awesome-progress-tracker";
 import { Loader2, Sparkles, FileText, Brain, CheckCircle } from "lucide-react";
 
 interface ProgressiveLoadingProps {
@@ -69,36 +70,16 @@ export function ProgressiveLoading({
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <div className="space-y-4">
-          <div className="flex items-center justify-between text-sm text-white/80">
-            <span>Progress</span>
-            <span>{Math.round(progress)}%</span>
-          </div>
-          <Progress value={progress} className="h-2" />
-
-          <div className="grid grid-cols-4 gap-2 text-xs text-white/60">
-            <div
-              className={`rounded p-2 text-center ${stage === "building-prompt" ? "bg-yellow-500/20 text-yellow-300" : ""}`}
-            >
-              Building Prompt
-            </div>
-            <div
-              className={`rounded p-2 text-center ${stage === "calling-ai" ? "bg-purple-500/20 text-purple-300" : ""}`}
-            >
-              Calling AI
-            </div>
-            <div
-              className={`rounded p-2 text-center ${stage === "parsing-response" ? "bg-green-500/20 text-green-300" : ""}`}
-            >
-              Parsing Response
-            </div>
-            <div
-              className={`rounded p-2 text-center ${stage === "complete" ? "bg-green-500/20 text-green-300" : ""}`}
-            >
-              Complete
-            </div>
-          </div>
-        </div>
+        <AwesomeProgressTracker 
+          steps={[
+            { id: "building", title: "Building Prompt", description: "Crafting AI prompt" },
+            { id: "calling", title: "Calling AI", description: "Generating content" },
+            { id: "parsing", title: "Parsing Response", description: "Processing results" },
+            { id: "complete", title: "Complete", description: "Ready to use" },
+          ]} 
+          currentStep={stage === "building-prompt" ? 0 : stage === "calling-ai" ? 1 : stage === "parsing-response" ? 2 : stage === "complete" ? 3 : 0} 
+          variant="minimal"
+        />
       </CardContent>
     </Card>
   );

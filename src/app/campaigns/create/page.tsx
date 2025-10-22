@@ -9,6 +9,7 @@ import {
 } from "~/components/ui/card";
 import { Button } from "~/components/ui/button";
 import { Progress } from "~/components/ui/progress";
+import { AwesomeProgressTracker } from "~/components/ui/awesome-progress-tracker";
 import { api } from "~/trpc/react";
 import { useAuth } from "~/components/auth/auth-provider";
 import Link from "next/link";
@@ -107,22 +108,14 @@ export default function CreateCampaignPage() {
     <div className="bg-app-gradient min-h-screen">
       <div className="container mx-auto px-4 py-8">
         <div className="mx-auto max-w-4xl">
-          {/* Progress */}
-          <Card className="mb-8">
+          {/* Awesome Progress Tracker */}
+          <Card className="mb-8 bg-white/10 border-white/20">
             <CardContent className="p-6">
-              <div className="mb-4 flex items-center justify-between">
-                <h2 className="text-lg font-semibold text-white">
-                  Step {currentStep + 1} of {totalSteps}:{" "}
-                  {STEPS[currentStep]?.title}
-                </h2>
-                <span className="text-sm text-white/80">
-                  {Math.round(progress)}% Complete
-                </span>
-              </div>
-              <Progress value={progress} className="mb-4" />
-              <p className="text-sm text-white/80">
-                {STEPS[currentStep]?.description}
-              </p>
+              <AwesomeProgressTracker 
+                steps={STEPS} 
+                currentStep={currentStep} 
+                variant="detailed"
+              />
             </CardContent>
           </Card>
 

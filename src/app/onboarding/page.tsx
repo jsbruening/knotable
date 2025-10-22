@@ -7,15 +7,15 @@ import { JoinCampaigns } from "./join-campaigns";
 import { JoinTeams } from "./join-teams";
 import { QuickTour } from "./quick-tour";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
-import { Progress } from "~/components/ui/progress";
+import { AwesomeProgressTracker } from "~/components/ui/awesome-progress-tracker";
 import { api } from "~/trpc/react";
 import { useRouter } from "next/navigation";
 
 const steps = [
-  { id: 1, title: "Profile Setup", component: ProfileSetup },
-  { id: 2, title: "Join Campaigns", component: JoinCampaigns },
-  { id: 3, title: "Join Teams", component: JoinTeams },
-  { id: 4, title: "Quick Tour", component: QuickTour },
+  { id: "profile", title: "Profile Setup", description: "Set up your profile" },
+  { id: "campaigns", title: "Join Campaigns", description: "Discover learning campaigns" },
+  { id: "teams", title: "Join Teams", description: "Connect with teams" },
+  { id: "tour", title: "Quick Tour", description: "Learn the platform" },
 ];
 
 export default function OnboardingPage() {
@@ -37,6 +37,19 @@ export default function OnboardingPage() {
 
   const progress = (currentStep / steps.length) * 100;
   const CurrentComponent = steps[currentStep - 1]?.component;
+
+  // Map step index to component
+  const getStepComponent = (stepIndex: number) => {
+    switch (stepIndex) {
+      case 0: return ProfileSetup;
+      case 1: return JoinCampaigns;
+      case 2: return JoinTeams;
+      case 3: return QuickTour;
+      default: return ProfileSetup;
+    }
+  };
+
+  const CurrentComponent = getStepComponent(currentStep - 1);
 
   const handleNext = (data?: any) => {
     if (data) {
@@ -96,34 +109,14 @@ export default function OnboardingPage() {
               Let's get you set up for your learning journey
             </p>
 
-            {/* Progress */}
-            <div className="mx-auto mb-8 max-w-md">
-              <div className="mb-2 flex justify-between text-sm text-white/70">
-                <span>
-                  Step {currentStep} of {steps.length}
-                </span>
-                <span>{Math.round(progress)}% Complete</span>
-              </div>
-              <Progress value={progress} className="h-2" />
+            {/* Awesome Progress Tracker */}
+            <div className="mx-auto mb-8 max-w-2xl">
+              <AwesomeProgressTracker 
+                steps={steps} 
+                currentStep={currentStep - 1} 
+                variant="detailed"
+              />
             </div>
-          </div>
-
-          {/* Step Navigation */}
-          <div className="mb-8 flex justify-center">
-            <div className="flex space-x-4">
-              {steps.map((step) => (
-                <div
-                  key={step.id}
-                  className={`flex h-10 w-10 items-center justify-center rounded-full border-2 font-semibold ${step.id <= currentStep
-                      ? "border-blue-400 bg-blue-400 text-white"
-                      : "border-white/30 bg-white/10 text-white/70"
-                    }`}
-                >
-                  {step.id}
-                </div>
-              ))}
-            </div>
-          </div>
 
           {/* Step Content */}
           <Card className="mx-auto max-w-2xl bg-white/10 border-white/20">
