@@ -110,18 +110,12 @@ export default function AdminSettings() {
                         OpenAI GPT
                       </div>
                     </SelectItem>
-                    <SelectItem value="groq" className="text-white hover:bg-white/20">
-                      <div className="flex items-center gap-2">
-                        <Zap className="h-4 w-4" />
-                        Groq (Ultra-Fast)
-                      </div>
-                    </SelectItem>
                   </SelectContent>
                 </Select>
               </div>
 
               {/* Provider Status */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="p-4 rounded-lg bg-green-500/10 border border-green-500/30">
                   <div className="flex items-center gap-2 mb-2">
                     <Zap className="h-4 w-4 text-green-400" />
@@ -147,30 +141,17 @@ export default function AdminSettings() {
                     Cost: ~$0.002 per 1K tokens
                   </div>
                 </div>
-
-                <div className="p-4 rounded-lg bg-purple-500/10 border border-purple-500/30">
-                  <div className="flex items-center gap-2 mb-2">
-                    <Zap className="h-4 w-4 text-purple-400" />
-                    <h4 className="font-medium text-purple-300">Groq</h4>
-                  </div>
-                  <p className="text-sm text-purple-200/80">
-                    Ultra-fast, ultra-cheap, great for high-volume
-                  </p>
-                  <div className="mt-2 text-xs text-purple-200/60">
-                    Cost: ~$0.0005 per 1K tokens
-                  </div>
-                </div>
               </div>
 
               {/* Auto-Rotation Info */}
               {selectedLLM === "auto" && (
-                <div className="p-4 rounded-lg bg-orange-500/10 border border-orange-500/30">
+                <div className="p-4 rounded-lg bg-purple-500/10 border border-purple-500/30">
                   <div className="flex items-center gap-2 mb-2">
-                    <RefreshCw className="h-4 w-4 text-orange-400" />
-                    <h4 className="font-medium text-orange-300">Auto-Rotation Active</h4>
+                    <RefreshCw className="h-4 w-4 text-purple-400" />
+                    <h4 className="font-medium text-purple-300">Auto-Rotation Active</h4>
                   </div>
-                  <p className="text-sm text-orange-200/80">
-                    Smart rotation: Groq (speed+cost) → Gemini (cost) → OpenAI (reliability).
+                  <p className="text-sm text-purple-200/80">
+                    Smart rotation: Gemini (cost-effective) → OpenAI (reliable).
                     Falls back to alternative providers if the primary fails.
                   </p>
                 </div>
