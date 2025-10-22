@@ -88,7 +88,7 @@ export function PromptEditorModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-h-[75vh] max-w-6xl overflow-hidden bg-app-gradient border-white/20">
+      <DialogContent className="max-h-[70vh] max-w-7xl overflow-hidden bg-app-gradient border-white/20">
         <DialogHeader>
           <DialogTitle className="flex items-center text-white">
             <Edit3 className="mr-2 h-5 w-5 text-blue-400" />
