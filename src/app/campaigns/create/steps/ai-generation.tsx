@@ -743,8 +743,7 @@ Create a comprehensive learning campaign with exactly ${campaignData.targetBloom
                 </h4>
                 <div className="space-y-2">
                   {generatedContent.milestones
-                    ?.slice(0, 3)
-                    .map((milestone: any, index: number) => (
+                    ?.map((milestone: any, index: number) => (
                       <div key={index} className="rounded-lg bg-white/10 p-3">
                         <h5 className="font-medium text-white">
                           {milestone.title}
@@ -752,13 +751,24 @@ Create a comprehensive learning campaign with exactly ${campaignData.targetBloom
                         <p className="text-sm text-white/80">
                           {milestone.objective}
                         </p>
+                        
+                        {/* Show lessons if they exist */}
+                        {milestone.lessons && milestone.lessons.length > 0 && (
+                          <div className="mt-3 ml-4">
+                            <h6 className="text-xs font-medium text-white/70 mb-2">
+                              Lessons ({milestone.lessons.length}):
+                            </h6>
+                            <div className="space-y-1">
+                              {milestone.lessons.map((lesson: any, lessonIndex: number) => (
+                                <div key={lessonIndex} className="text-xs text-white/60">
+                                  • {lesson.title}
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        )}
                       </div>
                     ))}
-                  {generatedContent.milestones?.length > 3 && (
-                    <p className="text-sm text-white/70">
-                      +{generatedContent.milestones.length - 3} more milestones
-                    </p>
-                  )}
                 </div>
               </div>
 
