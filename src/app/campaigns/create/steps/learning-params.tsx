@@ -148,7 +148,7 @@ export function LearningParamsStep() {
                     >
                       <div>
                         <div className="font-medium">{level.label}</div>
-                        <div className="text-sm text-gray-500">
+                        <div className="text-sm text-white/70">
                           {level.description}
                         </div>
                       </div>
@@ -177,7 +177,7 @@ export function LearningParamsStep() {
                     >
                       <div>
                         <div className="font-medium">{level.label}</div>
-                        <div className="text-sm text-gray-500">
+                        <div className="text-sm text-white/70">
                           {level.description}
                         </div>
                       </div>
@@ -197,11 +197,10 @@ export function LearningParamsStep() {
                   key={area}
                   type="button"
                   onClick={() => toggleFocusArea(area)}
-                  className={`rounded-lg p-2 text-sm transition-colors ${
-                    formData.focusAreas.includes(area)
-                      ? "bg-blue-500 text-white"
-                      : "bg-white/10 text-white/80 hover:bg-white/20"
-                  }`}
+                  className={`rounded-lg p-2 text-sm transition-colors ${formData.focusAreas.includes(area)
+                    ? "bg-blue-500 text-white"
+                    : "bg-white/10 text-white/80 hover:bg-white/20"
+                    }`}
                 >
                   {area}
                 </button>

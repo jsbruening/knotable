@@ -58,16 +58,16 @@ export default function CreateCampaignPage() {
 
   if (loading) {
     return (
-      <div className="flex min-h-screen items-center justify-center">
-        <div className="h-8 w-8 animate-spin rounded-full border-4 border-gray-300 border-t-blue-600"></div>
+      <div className="flex min-h-screen items-center justify-center bg-app-gradient">
+        <div className="h-8 w-8 animate-spin rounded-full border-4 border-white/30 border-t-blue-400"></div>
       </div>
     );
   }
 
   if (!user || !currentUser?.isAdmin) {
     return (
-      <div className="flex min-h-screen items-center justify-center">
-        <Card className="mx-auto max-w-md">
+      <div className="flex min-h-screen items-center justify-center bg-app-gradient">
+        <Card className="mx-auto max-w-md bg-white/10 border-white/20">
           <CardHeader className="text-center">
             <CardTitle className="text-white">Access Denied</CardTitle>
             <CardDescription className="text-white/80">
@@ -75,7 +75,7 @@ export default function CreateCampaignPage() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <Button asChild className="w-full">
+            <Button asChild className="w-full bg-blue-600 hover:bg-blue-700 text-white">
               <Link href="/dashboard">Return to Dashboard</Link>
             </Button>
           </CardContent>

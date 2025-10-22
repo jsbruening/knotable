@@ -84,23 +84,23 @@ export function QuickTour({ onNext, onPrevious }: QuickTourProps) {
   return (
     <div className="space-y-6">
       <div className="text-center">
-        <h3 className="mb-2 text-xl font-semibold">Welcome to Knotable! 🎉</h3>
-        <p className="text-gray-600">
+        <h3 className="mb-2 text-xl font-semibold text-white">Welcome to Knotable! 🎉</h3>
+        <p className="text-white/80">
           Here's what you can do on your learning journey
         </p>
       </div>
 
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
         {features.map((feature, index) => (
-          <Card key={index} className={`${feature.color} border-2`}>
+          <Card key={index} className="bg-white/10 border-white/20">
             <CardHeader className="pb-3">
               <div className="flex items-center space-x-3">
                 {feature.icon}
-                <CardTitle className="text-lg">{feature.title}</CardTitle>
+                <CardTitle className="text-lg text-white">{feature.title}</CardTitle>
               </div>
             </CardHeader>
             <CardContent>
-              <CardDescription className="text-sm">
+              <CardDescription className="text-sm text-white/80">
                 {feature.description}
               </CardDescription>
             </CardContent>
@@ -109,64 +109,64 @@ export function QuickTour({ onNext, onPrevious }: QuickTourProps) {
       </div>
 
       {/* Key Stats Preview */}
-      <Card className="border-blue-200 bg-gradient-to-r from-blue-50 to-purple-50">
+      <Card className="bg-white/10 border-white/20">
         <CardHeader>
-          <CardTitle className="text-center">Your Learning Dashboard</CardTitle>
-          <CardDescription className="text-center">
+          <CardTitle className="text-center text-white">Your Learning Dashboard</CardTitle>
+          <CardDescription className="text-center text-white/80">
             Track your progress and achievements
           </CardDescription>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-2 gap-4 text-center md:grid-cols-4">
             <div>
-              <div className="text-2xl font-bold text-blue-600">0</div>
-              <div className="text-sm text-gray-600">Points</div>
+              <div className="text-2xl font-bold text-white">0</div>
+              <div className="text-sm text-white/80">Points</div>
             </div>
             <div>
-              <div className="text-2xl font-bold text-green-600">0</div>
-              <div className="text-sm text-gray-600">Kudos</div>
+              <div className="text-2xl font-bold text-white">0</div>
+              <div className="text-sm text-white/80">Kudos</div>
             </div>
             <div>
-              <div className="text-2xl font-bold text-purple-600">0</div>
-              <div className="text-sm text-gray-600">Badges</div>
+              <div className="text-2xl font-bold text-white">0</div>
+              <div className="text-sm text-white/80">Badges</div>
             </div>
             <div>
-              <div className="text-2xl font-bold text-orange-600">1</div>
-              <div className="text-sm text-gray-600">Day Streak</div>
+              <div className="text-2xl font-bold text-white">1</div>
+              <div className="text-sm text-white/80">Day Streak</div>
             </div>
           </div>
         </CardContent>
       </Card>
 
       {/* Fun Facts */}
-      <Card>
+      <Card className="bg-white/10 border-white/20">
         <CardHeader>
-          <CardTitle className="text-center">Fun Learning Facts</CardTitle>
+          <CardTitle className="text-center text-white">Fun Learning Facts</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="space-y-3 text-sm">
             <div className="flex items-center space-x-2">
-              <Badge variant="outline">💡</Badge>
-              <span>
+              <Badge variant="outline" className="border-white/30 text-white/80">💡</Badge>
+              <span className="text-white/80">
                 Complete milestones to earn points and unlock new features
               </span>
             </div>
             <div className="flex items-center space-x-2">
-              <Badge variant="outline">🎯</Badge>
-              <span>
+              <Badge variant="outline" className="border-white/30 text-white/80">🎯</Badge>
+              <span className="text-white/80">
                 Give kudos to teammates - it's like saying "I owe you a
                 beverage!"
               </span>
             </div>
             <div className="flex items-center space-x-2">
-              <Badge variant="outline">🚀</Badge>
-              <span>
+              <Badge variant="outline" className="border-white/30 text-white/80">🚀</Badge>
+              <span className="text-white/80">
                 Use skip tokens to bypass difficult quizzes when you're stuck
               </span>
             </div>
             <div className="flex items-center space-x-2">
-              <Badge variant="outline">🎨</Badge>
-              <span>
+              <Badge variant="outline" className="border-white/30 text-white/80">🎨</Badge>
+              <span className="text-white/80">
                 Unlock profile themes and avatars to personalize your experience
               </span>
             </div>
@@ -175,10 +175,10 @@ export function QuickTour({ onNext, onPrevious }: QuickTourProps) {
       </Card>
 
       <div className="flex justify-between">
-        <Button onClick={onPrevious} variant="outline">
+        <Button onClick={onPrevious} variant="outline" className="border-white/20 text-white hover:bg-white/10">
           Back
         </Button>
-        <Button onClick={handleComplete} className="px-8">
+        <Button onClick={handleComplete} className="px-8 bg-blue-600 hover:bg-blue-700 text-white">
           Complete Setup & Start Learning! 🚀
         </Button>
       </div>

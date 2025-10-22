@@ -111,11 +111,10 @@ export default function OnboardingPage() {
               {steps.map((step) => (
                 <div
                   key={step.id}
-                  className={`flex h-10 w-10 items-center justify-center rounded-full border-2 ${
-                    step.id <= currentStep
+                  className={`flex h-10 w-10 items-center justify-center rounded-full border-2 font-semibold ${step.id <= currentStep
                       ? "border-blue-400 bg-blue-400 text-white"
                       : "border-white/30 bg-white/10 text-white/70"
-                  }`}
+                    }`}
                 >
                   {step.id}
                 </div>

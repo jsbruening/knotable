@@ -41,8 +41,8 @@ export default function DashboardPage() {
   if (!user) {
     // Show a lightweight placeholder while redirecting
     return (
-      <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100">
-        <div className="h-8 w-8 animate-spin rounded-full border-4 border-gray-300 border-t-blue-600" />
+      <div className="flex min-h-screen items-center justify-center bg-app-gradient">
+        <div className="h-8 w-8 animate-spin rounded-full border-4 border-white/30 border-t-blue-400" />
       </div>
     );
   }
@@ -63,65 +63,65 @@ export default function DashboardPage() {
 
           {/* Stats Overview */}
           <div className="mb-8 grid grid-cols-1 gap-6 md:grid-cols-4">
-            <Card className="border-blue-200 bg-gradient-to-r from-blue-50 to-blue-100">
+            <Card className="bg-white/10 border-white/20">
               <CardContent className="p-6">
                 <div className="flex items-center space-x-3">
                   <div className="rounded-lg bg-blue-600 p-2">
                     <Zap className="h-6 w-6 text-white" />
                   </div>
                   <div>
-                    <div className="text-2xl font-bold text-blue-900">
+                    <div className="text-2xl font-bold text-white">
                       {statsLoading ? "..." : userStats?.totalPoints || 0}
                     </div>
-                    <div className="text-sm text-blue-700">Total Points</div>
+                    <div className="text-sm text-white/80">Total Points</div>
                   </div>
                 </div>
               </CardContent>
             </Card>
 
-            <Card className="border-green-200 bg-gradient-to-r from-green-50 to-green-100">
+            <Card className="bg-white/10 border-white/20">
               <CardContent className="p-6">
                 <div className="flex items-center space-x-3">
                   <div className="rounded-lg bg-green-600 p-2">
                     <Star className="h-6 w-6 text-white" />
                   </div>
                   <div>
-                    <div className="text-2xl font-bold text-green-900">
+                    <div className="text-2xl font-bold text-white">
                       {statsLoading ? "..." : userStats?.totalKudos || 0}
                     </div>
-                    <div className="text-sm text-green-700">Kudos Received</div>
+                    <div className="text-sm text-white/80">Kudos Received</div>
                   </div>
                 </div>
               </CardContent>
             </Card>
 
-            <Card className="border-purple-200 bg-gradient-to-r from-purple-50 to-purple-100">
+            <Card className="bg-white/10 border-white/20">
               <CardContent className="p-6">
                 <div className="flex items-center space-x-3">
                   <div className="rounded-lg bg-purple-600 p-2">
                     <Trophy className="h-6 w-6 text-white" />
                   </div>
                   <div>
-                    <div className="text-2xl font-bold text-purple-900">
+                    <div className="text-2xl font-bold text-white">
                       {statsLoading ? "..." : userStats?.badges?.length || 0}
                     </div>
-                    <div className="text-sm text-purple-700">Badges Earned</div>
+                    <div className="text-sm text-white/80">Badges Earned</div>
                   </div>
                 </div>
               </CardContent>
             </Card>
 
-            <Card className="border-orange-200 bg-gradient-to-r from-orange-50 to-orange-100">
+            <Card className="bg-white/10 border-white/20">
               <CardContent className="p-6">
                 <div className="flex items-center space-x-3">
                   <div className="rounded-lg bg-orange-600 p-2">
                     <Target className="h-6 w-6 text-white" />
                   </div>
                   <div>
-                    <div className="text-2xl font-bold text-orange-900">
+                    <div className="text-2xl font-bold text-white">
                       {statsLoading ? "..." : userStats?.loginStreak || 0}
                     </div>
-                    <div className="text-sm text-orange-700">Day Streak</div>
+                    <div className="text-sm text-white/80">Day Streak</div>
                   </div>
                 </div>
               </CardContent>
@@ -131,7 +131,7 @@ export default function DashboardPage() {
           {/* Main Content Grid */}
           <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
             {/* Left Journey Ladder */}
-            <Card>
+            <Card className="bg-white/10 border-white/20">
               <CardHeader>
                 <CardTitle className="flex items-center justify-between text-white">
                   <span>Your Journey</span>
@@ -220,7 +220,7 @@ export default function DashboardPage() {
             </div>
 
             {/* Teams */}
-            <Card>
+            <Card className="bg-white/10 border-white/20">
               <CardHeader>
                 <CardTitle className="flex items-center space-x-2 text-white">
                   <Users className="h-5 w-5" />
@@ -233,18 +233,18 @@ export default function DashboardPage() {
               <CardContent>
                 {teamsLoading ? (
                   <div className="py-4 text-center">
-                    <div className="mx-auto h-6 w-6 animate-spin rounded-full border-2 border-gray-300 border-t-blue-600"></div>
+                    <div className="mx-auto h-6 w-6 animate-spin rounded-full border-2 border-white/30 border-t-blue-400"></div>
                   </div>
                 ) : userTeams?.length === 0 ? (
                   <div className="py-8 text-center">
-                    <Users className="mx-auto mb-4 h-12 w-12 text-gray-400" />
+                    <Users className="mx-auto mb-4 h-12 w-12 text-white/60" />
                     <h3 className="mb-2 text-lg font-semibold text-white">
                       No teams yet
                     </h3>
                     <p className="mb-4 text-white/80">
                       Join or create a team to collaborate!
                     </p>
-                    <Button asChild>
+                    <Button asChild className="bg-blue-600 hover:bg-blue-700 text-white">
                       <Link href="/teams">Browse Teams</Link>
                     </Button>
                   </div>
@@ -276,7 +276,7 @@ export default function DashboardPage() {
                       </div>
                     ))}
                     {userTeams && userTeams.length > 3 && (
-                      <Button variant="outline" className="w-full" asChild>
+                      <Button variant="outline" className="w-full border-white/20 text-white hover:bg-white/10" asChild>
                         <Link href="/teams">View All Teams</Link>
                       </Button>
                     )}
