@@ -1,4 +1,5 @@
 import { GoogleGenAI } from "@google/genai";
+import { env } from "~/env.js";
 
 // Support Gemini AI (Direct API - no Vertex AI required!)
 const createGeminiClient = () => {
@@ -14,8 +15,17 @@ const createGeminiClient = () => {
 
 export const gemini = createGeminiClient();
 
+// Check if Gemini is disabled
+const isGeminiDisabled = () => {
+  return env.DISABLE_GEMINI === "true" || env.DISABLE_GEMINI === "1";
+};
+
 // Helper function for generating campaign content
 export async function generateCampaignContent(prompt: string) {
+  if (isGeminiDisabled()) {
+    throw new Error("Gemini API calls are disabled. Set DISABLE_GEMINI=false to enable.");
+  }
+
   try {
     // Use the correct model name from Google AI Studio docs
     const modelName = "gemini-2.5-flash";
@@ -56,6 +66,10 @@ export async function generateCampaignContent(prompt: string) {
 
 // Helper function for generating quiz questions
 export async function generateQuizQuestions(topic: string, bloomLevel: number) {
+  if (isGeminiDisabled()) {
+    throw new Error("Gemini API calls are disabled. Set DISABLE_GEMINI=false to enable.");
+  }
+
   const bloomLevels = [
     "Remember",
     "Understand",
@@ -108,6 +122,10 @@ export async function generateMilestoneObjective(
   bloomLevel: number,
   focusAreas: string[],
 ) {
+  if (isGeminiDisabled()) {
+    throw new Error("Gemini API calls are disabled. Set DISABLE_GEMINI=false to enable.");
+  }
+
   const bloomLevels = [
     "Remember",
     "Understand",
@@ -177,6 +195,10 @@ export async function generateExternalResources(
   topic: string,
   resourceTypes: string[],
 ) {
+  if (isGeminiDisabled()) {
+    throw new Error("Gemini API calls are disabled. Set DISABLE_GEMINI=false to enable.");
+  }
+
   const prompt = `Suggest 5 high-quality external resources for learning about "${topic}".
 
 Resource types to prioritize: ${resourceTypes.join(", ")}

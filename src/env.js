@@ -22,6 +22,8 @@ export const env = createEnv({
     OPENAI_API_KEY: z.string().min(1),
     OPENAI_API_BASE: z.string().url().optional(),
     OPENAI_API_VERSION: z.string().optional(),
+    GEMINI_API_KEY: z.string().min(1).optional(),
+    DISABLE_GEMINI: z.string().optional(),
   },
 
   /**
@@ -54,6 +56,8 @@ export const env = createEnv({
     OPENAI_API_KEY: process.env.OPENAI_API_KEY,
     OPENAI_API_BASE: process.env.OPENAI_API_BASE,
     OPENAI_API_VERSION: process.env.OPENAI_API_VERSION,
+    GEMINI_API_KEY: process.env.GEMINI_API_KEY,
+    DISABLE_GEMINI: process.env.DISABLE_GEMINI,
   },
   /**
    * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation. This is especially

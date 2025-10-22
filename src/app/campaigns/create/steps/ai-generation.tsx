@@ -770,7 +770,7 @@ Create a comprehensive learning campaign with exactly ${campaignData.targetBloom
                         <h5 className="text-lg font-semibold text-white mb-2">
                           {milestone.title}
                         </h5>
-                        
+
                         {/* Milestone Objective */}
                         <p className="text-sm text-white/80 mb-4">
                           {milestone.objective}

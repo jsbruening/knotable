@@ -191,11 +191,10 @@ export function PublishStep() {
               <button
                 type="button"
                 onClick={() => setScope("public")}
-                className={`rounded-lg border p-4 transition-colors ${
-                  scope === "public"
+                className={`rounded-lg border p-4 transition-colors ${scope === "public"
                     ? "border-blue-400 bg-blue-500/20"
                     : "border-white/20 bg-white/10 hover:bg-white/20"
-                }`}
+                  }`}
               >
                 <div className="flex items-center gap-3">
                   <Globe className="h-5 w-5 text-white" />
@@ -211,11 +210,10 @@ export function PublishStep() {
               <button
                 type="button"
                 onClick={() => setScope("team")}
-                className={`rounded-lg border p-4 transition-colors ${
-                  scope === "team"
+                className={`rounded-lg border p-4 transition-colors ${scope === "team"
                     ? "border-blue-400 bg-blue-500/20"
                     : "border-white/20 bg-white/10 hover:bg-white/20"
-                }`}
+                  }`}
               >
                 <div className="flex items-center gap-3">
                   <Users className="h-5 w-5 text-white" />
