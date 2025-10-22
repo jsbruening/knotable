@@ -88,7 +88,7 @@ export function PromptEditorModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-h-[90vh] max-w-4xl overflow-hidden bg-app-gradient border-white/20">
+      <DialogContent className="max-h-[85vh] max-w-6xl overflow-hidden bg-app-gradient border-white/20">
         <DialogHeader>
           <DialogTitle className="flex items-center text-white">
             <Edit3 className="mr-2 h-5 w-5 text-blue-400" />
@@ -129,7 +129,7 @@ export function PromptEditorModal({
               id="prompt-editor"
               value={editedPrompt}
               onChange={(e) => handlePromptChange(e.target.value)}
-              className="max-h-[500px] min-h-[400px] resize-none border-white/20 bg-white/10 font-mono text-sm text-white placeholder:text-white/50 overflow-y-auto"
+              className="h-[400px] resize-none border-white/20 bg-white/10 font-mono text-sm text-white placeholder:text-white/50 overflow-y-auto"
               placeholder="Enter your AI prompt here..."
             />
           </div>
