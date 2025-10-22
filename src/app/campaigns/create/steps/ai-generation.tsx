@@ -259,6 +259,17 @@ Create a comprehensive learning campaign with exactly ${campaignData.targetBloom
       // Generate content using a temporary campaign ID (we'll create the real campaign later)
       const content = await generateContentMutation.mutateAsync({
         campaignId: "temp", // Temporary ID - we'll handle this in the publish step
+        // Campaign data
+        title: campaignData.title,
+        topic: campaignData.topic,
+        description: campaignData.description,
+        targetAudience: campaignData.targetAudience,
+        startingBloomLevel: campaignData.startingBloomLevel,
+        targetBloomLevel: campaignData.targetBloomLevel,
+        focusAreas: campaignData.focusAreas || [],
+        estimatedDuration: campaignData.estimatedDuration,
+        tone: campaignData.tone,
+        // Learning parameters
         ...aiParams,
       });
 
@@ -341,6 +352,17 @@ Create a comprehensive learning campaign with exactly ${campaignData.targetBloom
       // Generate content using a temporary campaign ID (we'll create the real campaign later)
       const content = await generateContentMutation.mutateAsync({
         campaignId: "temp", // Temporary ID - we'll handle this in the publish step
+        // Campaign data
+        title: campaignData.title,
+        topic: campaignData.topic,
+        description: campaignData.description,
+        targetAudience: campaignData.targetAudience,
+        startingBloomLevel: campaignData.startingBloomLevel,
+        targetBloomLevel: campaignData.targetBloomLevel,
+        focusAreas: campaignData.focusAreas || [],
+        estimatedDuration: campaignData.estimatedDuration,
+        tone: campaignData.tone,
+        // Learning parameters
         ...aiParams,
       });
 
@@ -391,6 +413,30 @@ Create a comprehensive learning campaign with exactly ${campaignData.targetBloom
   };
 
   const canProceed = !!generatedContent;
+
+  // Calculate total assessment questions from milestones and lessons
+  const getTotalAssessmentQuestions = (content: any) => {
+    if (!content?.milestones) return 0;
+    
+    let totalQuestions = 0;
+    content.milestones.forEach((milestone: any) => {
+      // Count milestone-level questions
+      if (milestone.assessmentQuestions) {
+        totalQuestions += milestone.assessmentQuestions.length;
+      }
+      // Count lesson-level questions
+      if (milestone.lessons) {
+        milestone.lessons.forEach((lesson: any) => {
+          if (lesson.assessmentQuestions) {
+            totalQuestions += lesson.assessmentQuestions.length;
+          }
+        });
+      }
+    });
+    return totalQuestions;
+  };
+
+  const totalAssessmentQuestions = getTotalAssessmentQuestions(generatedContent);
 
   return (
     <div className="space-y-6">
@@ -718,12 +764,10 @@ Create a comprehensive learning campaign with exactly ${campaignData.targetBloom
 
               <div>
                 <h4 className="mb-2 font-semibold text-white">
-                  Assessment Questions (
-                  {generatedContent.assessmentQuestions?.length || 0})
+                  Assessment Questions ({totalAssessmentQuestions})
                 </h4>
                 <p className="text-sm text-white/80">
-                  {generatedContent.assessmentQuestions?.length || 0} questions
-                  generated for knowledge verification
+                  {totalAssessmentQuestions} questions generated for knowledge verification
                 </p>
               </div>
             </div>
