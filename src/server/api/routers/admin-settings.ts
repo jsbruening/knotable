@@ -10,7 +10,7 @@ export const adminSettingsRouter = createTRPCRouter({
   // Get all admin settings
   getAll: protectedProcedure.query(async ({ ctx }) => {
     // Check if user is admin
-    if (!ctx.session?.user?.isAdmin) {
+    if (!ctx.user?.isAdmin) {
       throw new TRPCError({
         code: "FORBIDDEN",
         message: "Only admins can access admin settings",
@@ -40,7 +40,7 @@ export const adminSettingsRouter = createTRPCRouter({
     .input(z.object({ key: z.string() }))
     .query(async ({ ctx, input }) => {
       // Check if user is admin
-      if (!ctx.session?.user?.isAdmin) {
+      if (!ctx.user?.isAdmin) {
         throw new TRPCError({
           code: "FORBIDDEN",
           message: "Only admins can access admin settings",
@@ -65,14 +65,14 @@ export const adminSettingsRouter = createTRPCRouter({
     )
     .mutation(async ({ ctx, input }) => {
       // Check if user is admin
-      if (!ctx.session?.user?.isAdmin) {
+      if (!ctx.user?.isAdmin) {
         throw new TRPCError({
           code: "FORBIDDEN",
           message: "Only admins can modify admin settings",
         });
       }
 
-      const userId = ctx.session.user.id;
+      const userId = ctx.user.id;
 
       // Upsert the setting
       const setting = await ctx.db.adminSettings.upsert({
@@ -98,7 +98,7 @@ export const adminSettingsRouter = createTRPCRouter({
     .input(z.object({ key: z.string() }))
     .mutation(async ({ ctx, input }) => {
       // Check if user is admin
-      if (!ctx.session?.user?.isAdmin) {
+      if (!ctx.user?.isAdmin) {
         throw new TRPCError({
           code: "FORBIDDEN",
           message: "Only admins can delete admin settings",
