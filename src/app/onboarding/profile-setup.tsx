@@ -58,11 +58,11 @@ export function ProfileSetup({ onNext, data }: ProfileSetupProps) {
       <div className="text-center">
         <Avatar className="mx-auto mb-4 h-24 w-24">
           <AvatarImage src={user?.user_metadata?.avatar_url} />
-          <AvatarFallback className="text-2xl">
+          <AvatarFallback className="text-2xl bg-white/20 text-white">
             {formData.displayName?.charAt(0) || user?.email?.charAt(0) || "U"}
           </AvatarFallback>
         </Avatar>
-        <Button type="button" variant="outline" size="sm">
+        <Button type="button" variant="outline" size="sm" className="border-white/20 text-white hover:bg-white/10">
           <Upload className="mr-2 h-4 w-4" />
           Upload Avatar
         </Button>
@@ -70,21 +70,22 @@ export function ProfileSetup({ onNext, data }: ProfileSetupProps) {
 
       {/* Display Name */}
       <div className="space-y-2">
-        <Label htmlFor="displayName">Display Name *</Label>
+        <Label htmlFor="displayName" className="text-white">Display Name *</Label>
         <Input
           id="displayName"
           value={formData.displayName}
           onChange={(e) => handleInputChange("displayName", e.target.value)}
           placeholder="Enter your display name"
           required
+          className="bg-white/10 border-white/20 text-white placeholder:text-white/60 focus:border-white/40"
         />
       </div>
 
       {/* GitHub Username */}
       <div className="space-y-2">
-        <Label htmlFor="githubUsername">GitHub Username</Label>
+        <Label htmlFor="githubUsername" className="text-white">GitHub Username</Label>
         <div className="relative">
-          <Github className="absolute top-3 left-3 h-4 w-4 text-gray-400" />
+          <Github className="absolute top-3 left-3 h-4 w-4 text-white/60" />
           <Input
             id="githubUsername"
             value={formData.githubUsername}
@@ -92,22 +93,22 @@ export function ProfileSetup({ onNext, data }: ProfileSetupProps) {
               handleInputChange("githubUsername", e.target.value)
             }
             placeholder="your-github-username"
-            className="pl-10"
+            className="pl-10 bg-white/10 border-white/20 text-white placeholder:text-white/60 focus:border-white/40"
           />
         </div>
       </div>
 
       {/* GitHub Repo URL */}
       <div className="space-y-2">
-        <Label htmlFor="githubRepoUrl">GitHub Repository URL</Label>
+        <Label htmlFor="githubRepoUrl" className="text-white">GitHub Repository URL</Label>
         <div className="relative">
-          <ExternalLink className="absolute top-3 left-3 h-4 w-4 text-gray-400" />
+          <ExternalLink className="absolute top-3 left-3 h-4 w-4 text-white/60" />
           <Input
             id="githubRepoUrl"
             value={formData.githubRepoUrl}
             onChange={(e) => handleInputChange("githubRepoUrl", e.target.value)}
             placeholder="https://github.com/username/repo"
-            className="pl-10"
+            className="pl-10 bg-white/10 border-white/20 text-white placeholder:text-white/60 focus:border-white/40"
           />
         </div>
       </div>
@@ -116,20 +117,21 @@ export function ProfileSetup({ onNext, data }: ProfileSetupProps) {
 
       {/* Bio */}
       <div className="space-y-2">
-        <Label htmlFor="bio">Bio (Optional)</Label>
+        <Label htmlFor="bio" className="text-white">Bio (Optional)</Label>
         <Textarea
           id="bio"
           value={formData.bio}
           onChange={(e) => handleInputChange("bio", e.target.value)}
           placeholder="Tell us a bit about yourself and your learning goals..."
           rows={3}
+          className="bg-white/10 border-white/20 text-white placeholder:text-white/60 focus:border-white/40"
         />
       </div>
 
       {/* Removed Bloom's Taxonomy explainer for now; we'll show per-campaign context */}
 
       <div className="flex justify-end">
-        <Button type="submit" className="px-8">
+        <Button type="submit" className="px-8 bg-blue-600 hover:bg-blue-700 text-white">
           Continue
         </Button>
       </div>
