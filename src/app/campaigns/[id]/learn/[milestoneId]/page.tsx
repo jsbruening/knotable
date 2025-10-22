@@ -131,9 +131,13 @@ export default function LearningSessionPage() {
     },
   });
 
+  const utils = api.useUtils();
   const refreshResourcesMutation = api.campaign.refreshResources.useMutation({
-    onSuccess: () => {
+    onSuccess: async () => {
       toast.success("Resources refreshed");
+      if (sessionId) {
+        await utils.campaign.getLearningSession.invalidate({ sessionId });
+      }
     },
     onError: (e) => toast.error(e.message),
   });

@@ -54,12 +54,12 @@ export default function OnboardingPage() {
 
   if (!user) {
     return (
-      <div className="flex min-h-screen items-center justify-center">
+      <div className="min-h-screen bg-app-gradient flex items-center justify-center">
         <div className="text-center">
-          <h1 className="mb-4 text-2xl font-bold text-gray-900">
+          <h1 className="mb-4 text-2xl font-bold text-white">
             Please sign in to continue
           </h1>
-          <p className="text-gray-600">
+          <p className="text-white/80">
             You need to be signed in to access the onboarding process.
           </p>
         </div>
@@ -69,19 +69,19 @@ export default function OnboardingPage() {
 
   if (currentUser?.onboardingCompleted) {
     return (
-      <div className="flex min-h-screen items-center justify-center">
-        <div className="border-top-blue-600 h-8 w-8 animate-spin rounded-full border-4 border-gray-300" />
+      <div className="min-h-screen bg-app-gradient flex items-center justify-center">
+        <div className="h-8 w-8 animate-spin rounded-full border-4 border-white/30 border-t-blue-400" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
+    <div className="min-h-screen bg-app-gradient">
       <div className="container mx-auto px-4 py-8">
         <div className="mx-auto max-w-4xl">
           {/* Header */}
           <div className="mb-8 text-center">
-            <h1 className="mb-2 text-4xl font-bold text-gray-900">
+            <h1 className="mb-2 text-4xl font-bold text-white">
               Welcome to Knotable!
               <img
                 src="/images/logo.png"
@@ -89,13 +89,13 @@ export default function OnboardingPage() {
                 className="ml-3 inline-block h-8 align-middle"
               />
             </h1>
-            <p className="mb-6 text-lg text-gray-600">
+            <p className="mb-6 text-lg text-white/80">
               Let's get you set up for your learning journey
             </p>
 
             {/* Progress */}
             <div className="mx-auto mb-8 max-w-md">
-              <div className="mb-2 flex justify-between text-sm text-gray-600">
+              <div className="mb-2 flex justify-between text-sm text-white/70">
                 <span>
                   Step {currentStep} of {steps.length}
                 </span>
@@ -113,8 +113,8 @@ export default function OnboardingPage() {
                   key={step.id}
                   className={`flex h-10 w-10 items-center justify-center rounded-full border-2 ${
                     step.id <= currentStep
-                      ? "border-blue-600 bg-blue-600 text-white"
-                      : "border-gray-300 text-gray-400"
+                      ? "border-blue-400 bg-blue-400 text-white"
+                      : "border-white/30 text-white/50"
                   }`}
                 >
                   {step.id}
@@ -124,9 +124,9 @@ export default function OnboardingPage() {
           </div>
 
           {/* Step Content */}
-          <Card className="mx-auto max-w-2xl">
+          <Card className="mx-auto max-w-2xl bg-white/10 border-white/20">
             <CardHeader>
-              <CardTitle className="text-center">
+              <CardTitle className="text-center text-white">
                 {steps[currentStep - 1]?.title}
               </CardTitle>
             </CardHeader>
