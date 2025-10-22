@@ -44,13 +44,13 @@ model User {
 }
 
 model Campaign {
-    id                 String          @id @default(cuid())
+    id                 String            @id @default(cuid())
     title              String
     description        String
     topic              String
     targetAudience     String?
-    startingBloomLevel Int             @default(1)
-    targetBloomLevel   Int             @default(6)
+    startingBloomLevel Int               @default(1)
+    targetBloomLevel   Int               @default(6)
     focusAreas         String[]
     resourceTypes      String[]
     excludedSources    String[]
@@ -58,15 +58,15 @@ model Campaign {
     estimatedDuration  Int?
     challengeType      String?
     teamChallengeIdeas String?
-    isActive           Boolean         @default(true)
-    isPublic           Boolean         @default(true)
+    isActive           Boolean           @default(true)
+    isPublic           Boolean           @default(true)
     createdById        String
-    createdAt          DateTime        @default(now())
-    updatedAt          DateTime        @updatedAt
-    isDraft            Boolean         @default(false)
+    createdAt          DateTime          @default(now())
+    updatedAt          DateTime          @updatedAt
+    isDraft            Boolean           @default(false)
     teamId             String?
-    createdBy          User            @relation("CampaignCreatedBy", fields: [createdById], references: [id])
-    team               Team?           @relation("TeamCampaigns", fields: [teamId], references: [id])
+    createdBy          User              @relation("CampaignCreatedBy", fields: [createdById], references: [id])
+    team               Team?             @relation("TeamCampaigns", fields: [teamId], references: [id])
     milestones         Milestone[]
     teamChallenges     TeamChallenge[]
     users              UserCampaign[]
@@ -96,17 +96,17 @@ model UserCampaign {
 }
 
 model Milestone {
-    id                String          @id @default(cuid())
+    id                String            @id @default(cuid())
     campaignId        String
     bloomLevel        Int
     title             String
     objective         String
     externalResources String[]
-    isActive          Boolean         @default(true)
+    isActive          Boolean           @default(true)
     order             Int
-    createdAt         DateTime        @default(now())
-    updatedAt         DateTime        @updatedAt
-    campaign          Campaign        @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+    createdAt         DateTime          @default(now())
+    updatedAt         DateTime          @updatedAt
+    campaign          Campaign          @relation(fields: [campaignId], references: [id], onDelete: Cascade)
     subMilestones     SubMilestone[]
     quizzes           Quiz[]
     teamChallenges    TeamChallenge[]
@@ -349,23 +349,23 @@ model Notification {
 }
 
 model LearningSession {
-    id                String    @id @default(cuid())
-    userId            String
-    campaignId        String
-    milestoneId       String
-    startedAt         DateTime  @default(now())
-    completedAt       DateTime?
-    timeSpent         Int       @default(0) // in minutes
-    progress          Float     @default(0) // 0-100%
-    isActive          Boolean   @default(true)
-    completedResources String[] @default([]) // Track completed resource URLs
-    resourceProgress  Json?     // Detailed progress per resource
-    
-    user              User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-    campaign          Campaign  @relation(fields: [campaignId], references: [id], onDelete: Cascade)
-    milestone         Milestone @relation(fields: [milestoneId], references: [id], onDelete: Cascade)
+    id                 String    @id @default(cuid())
+    userId             String
+    campaignId         String
+    milestoneId        String
+    startedAt          DateTime  @default(now())
+    completedAt        DateTime?
+    timeSpent          Int       @default(0) // in minutes
+    progress           Float     @default(0) // 0-100%
+    isActive           Boolean   @default(true)
+    completedResources String[]  @default([]) // Track completed resource URLs
+    resourceProgress   Json? // Detailed progress per resource
+
+    user               User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+    campaign           Campaign           @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+    milestone          Milestone          @relation(fields: [milestoneId], references: [id], onDelete: Cascade)
     resourceProgresses ResourceProgress[]
-    
+
     @@unique([userId, campaignId, milestoneId])
     @@index([userId])
     @@index([campaignId])
@@ -375,18 +375,18 @@ model LearningSession {
 }
 
 model ResourceProgress {
-    id           String          @id @default(cuid())
+    id           String    @id @default(cuid())
     sessionId    String
     resourceUrl  String
-    resourceType String?         // video, article, tool, etc.
-    startedAt    DateTime        @default(now())
+    resourceType String? // video, article, tool, etc.
+    startedAt    DateTime  @default(now())
     completedAt  DateTime?
-    timeSpent    Int             @default(0) // in minutes
-    progress     Float           @default(0) // 0-100%
-    isCompleted  Boolean         @default(false)
-    
-    session      LearningSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
-    
+    timeSpent    Int       @default(0) // in minutes
+    progress     Float     @default(0) // 0-100%
+    isCompleted  Boolean   @default(false)
+
+    session LearningSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+
     @@unique([sessionId, resourceUrl])
     @@index([sessionId])
     @@index([resourceUrl])

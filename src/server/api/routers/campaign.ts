@@ -1051,8 +1051,8 @@ export const campaignRouter = createTRPCRouter({
       const userId = ctx.user.id;
       const { campaignId, milestoneId } = input;
 
-      // Check if user is part of the campaign
-      const userCampaign = await ctx.db.userCampaign.findUnique({
+      // Check if user is part of the campaign, auto-enroll if not
+      let userCampaign = await ctx.db.userCampaign.findUnique({
         where: {
           userId_campaignId: {
             userId,
@@ -1062,9 +1062,16 @@ export const campaignRouter = createTRPCRouter({
       });
 
       if (!userCampaign) {
-        throw new TRPCError({
-          code: "FORBIDDEN",
-          message: "You must join the campaign before starting a learning session",
+        // Auto-enroll user in the campaign
+        userCampaign = await ctx.db.userCampaign.create({
+          data: {
+            userId,
+            campaignId,
+            currentMilestone: 1,
+            completedMilestones: [],
+            joinedAt: new Date(),
+            lastActiveAt: new Date(),
+          },
         });
       }
 

@@ -94,10 +94,10 @@ export default function CampaignDetailPage() {
   const progressPercentage =
     campaign.milestones.length > 0
       ? (campaign.milestones.filter(
-          (m) => m.bloomLevel <= campaign.targetBloomLevel,
-        ).length /
-          campaign.milestones.length) *
-        100
+        (m) => m.bloomLevel <= campaign.targetBloomLevel,
+      ).length /
+        campaign.milestones.length) *
+      100
       : 0;
 
   return (
@@ -460,13 +460,13 @@ export default function CampaignDetailPage() {
                                                 String.fromCharCode(
                                                   65 + oIndex,
                                                 ) && (
-                                                <Badge
-                                                  variant="glassGreen"
-                                                  className="text-xs"
-                                                >
-                                                  Correct
-                                                </Badge>
-                                              )}
+                                                  <Badge
+                                                    variant="glassGreen"
+                                                    className="text-xs"
+                                                  >
+                                                    Correct
+                                                  </Badge>
+                                                )}
                                             </div>
                                           ),
                                         )}
@@ -484,8 +484,8 @@ export default function CampaignDetailPage() {
                           )}
 
                         <div className="flex justify-end">
-                          <Button 
-                            variant="outline" 
+                          <Button
+                            variant="outline"
                             size="sm"
                             asChild
                           >
