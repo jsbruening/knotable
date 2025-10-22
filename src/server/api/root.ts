@@ -4,6 +4,7 @@ import { campaignRouter } from "~/server/api/routers/campaign";
 import { gamificationRouter } from "~/server/api/routers/gamification";
 import { teamRouter } from "~/server/api/routers/team";
 import { adminRouter } from "~/server/api/routers/admin";
+import { adminSettingsRouter } from "~/server/api/routers/admin-settings";
 import { createCallerFactory, createTRPCRouter } from "~/server/api/trpc";
 
 /**
@@ -18,6 +19,7 @@ export const appRouter = createTRPCRouter({
   gamification: gamificationRouter,
   team: teamRouter,
   admin: adminRouter,
+  adminSettings: adminSettingsRouter,
 });
 
 // export type definition of API

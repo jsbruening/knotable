@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "~/components/ui/card";
 import { Button } from "~/components/ui/button";
 import { Switch } from "~/components/ui/switch";
@@ -9,35 +9,62 @@ import { Badge } from "~/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "~/components/ui/select";
 import { AlertTriangle, Settings, Zap, Brain, RefreshCw } from "lucide-react";
 import { toast } from "sonner";
+import { api } from "~/trpc/react";
 
 export default function AdminSettings() {
   const [isGeminiDisabled, setIsGeminiDisabled] = useState(false);
   const [selectedLLM, setSelectedLLM] = useState("auto");
 
-  const handleToggleGemini = async () => {
-    try {
-      // In a real app, this would make an API call to update the setting
-      // For now, we'll just show a toast
-      const newState = !isGeminiDisabled;
-      setIsGeminiDisabled(newState);
-      
-      toast.success(
-        `Gemini API ${newState ? "disabled" : "enabled"}`,
-        {
-          description: newState 
-            ? "AI content generation is now disabled" 
-            : "AI content generation is now enabled"
-        }
-      );
-    } catch (error) {
-      toast.error("Failed to update setting");
+  // Fetch admin settings
+  const { data: adminSettings, refetch: refetchSettings } = api.adminSettings.getAll.useQuery();
+  
+  // Mutations for updating settings
+  const setGeminiDisabledMutation = api.adminSettings.set.useMutation({
+    onSuccess: () => {
+      refetchSettings();
+      toast.success("Gemini API setting updated");
+    },
+    onError: (error) => {
+      toast.error(`Failed to update setting: ${error.message}`);
+    },
+  });
+
+  const setLLMProviderMutation = api.adminSettings.set.useMutation({
+    onSuccess: () => {
+      refetchSettings();
+      toast.success("LLM Provider setting updated");
+    },
+    onError: (error) => {
+      toast.error(`Failed to update setting: ${error.message}`);
+    },
+  });
+
+  // Load settings from database on mount
+  useEffect(() => {
+    if (adminSettings) {
+      setIsGeminiDisabled(adminSettings.gemini_disabled?.value === "true");
+      setSelectedLLM(adminSettings.llm_provider?.value || "auto");
     }
+  }, [adminSettings]);
+
+  const handleToggleGemini = async () => {
+    const newState = !isGeminiDisabled;
+    setIsGeminiDisabled(newState);
+    
+    setGeminiDisabledMutation.mutate({
+      key: "gemini_disabled",
+      value: newState ? "true" : "false",
+      description: "Controls whether Gemini API calls are disabled",
+    });
   };
 
   const handleLLMChange = (value: string) => {
     setSelectedLLM(value);
-    toast.success(`LLM Provider changed to ${value}`, {
-      description: value === "auto" ? "Will automatically rotate between providers" : `Using ${value} for all requests`
+    
+    setLLMProviderMutation.mutate({
+      key: "llm_provider",
+      value: value,
+      description: "Primary LLM provider for content generation",
     });
   };
 

@@ -2,6 +2,27 @@ import { env } from "~/env.js";
 import { generateCampaignContent as generateWithGemini } from "./gemini";
 import { generateCampaignContent as generateWithOpenAI } from "./openai";
 
+// Helper function to check if Gemini is disabled from database
+async function isGeminiDisabledFromDB(): Promise<boolean> {
+  try {
+    const response = await fetch("/api/trpc/adminSettings.getGeminiDisabled", {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      return data.result?.data === true;
+    }
+  } catch (error) {
+    console.warn("Failed to check Gemini disable status from database:", error);
+  }
+
+  return false;
+}
+
 export type LLMProvider = "gemini" | "openai" | "auto";
 
 export interface LLMConfig {
@@ -45,11 +66,24 @@ const PROVIDER_CONFIGS = {
   },
 };
 
-// Get available providers
-export function getAvailableProviders(): string[] {
-  return Object.entries(PROVIDER_CONFIGS)
-    .filter(([_, config]) => config.enabled)
-    .map(([name, _]) => name);
+// Get available providers (with async database check for Gemini)
+export async function getAvailableProviders(): Promise<string[]> {
+  const providers = [];
+  
+  // Check Gemini (environment + database)
+  if (env.GEMINI_API_KEY && env.DISABLE_GEMINI !== "true") {
+    const isDisabledInDB = await isGeminiDisabledFromDB();
+    if (!isDisabledInDB) {
+      providers.push("gemini");
+    }
+  }
+  
+  // Check OpenAI
+  if (env.OPENAI_API_KEY) {
+    providers.push("openai");
+  }
+  
+  return providers;
 }
 
 // Get provider configuration
@@ -58,8 +92,8 @@ export function getProviderConfig(provider: string) {
 }
 
 // Smart LLM selection logic
-function selectProvider(config: LLMConfig): string {
-  const availableProviders = getAvailableProviders();
+async function selectProvider(config: LLMConfig): Promise<string> {
+  const availableProviders = await getAvailableProviders();
   
   if (availableProviders.length === 0) {
     throw new Error("No LLM providers are available. Please check your API keys.");
@@ -91,7 +125,7 @@ export async function generateWithLLM(
   config: LLMConfig = DEFAULT_CONFIG
 ): Promise<LLMResult> {
   const startTime = Date.now();
-  const selectedProvider = selectProvider(config);
+  const selectedProvider = await selectProvider(config);
   const providerConfig = getProviderConfig(selectedProvider);
 
   console.log(`🤖 Using ${providerConfig.name} (${selectedProvider})`);
@@ -127,7 +161,7 @@ export async function generateWithLLM(
     console.error(`❌ ${providerConfig.name} failed:`, error.message);
 
     // Fallback logic: try other providers
-    const availableProviders = getAvailableProviders();
+    const availableProviders = await getAvailableProviders();
     const fallbackProviders = availableProviders.filter(p => p !== selectedProvider);
 
     if (fallbackProviders.length > 0) {
