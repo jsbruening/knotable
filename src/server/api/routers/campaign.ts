@@ -580,11 +580,25 @@ export const campaignRouter = createTRPCRouter({
     .input(
       z.object({
         campaignId: z.string(),
+        // Campaign data
+        title: z.string(),
+        topic: z.string(),
+        description: z.string(),
+        targetAudience: z.string().optional(),
+        startingBloomLevel: z.number(),
+        targetBloomLevel: z.number(),
+        focusAreas: z.array(z.string()),
+        estimatedDuration: z.number().optional(),
+        tone: z.string().optional(),
+        // Learning parameters
         learningStyle: z.string().optional(),
         difficultyPreference: z.string().optional(),
         contentFormat: z.string().optional(),
         timeCommitment: z.string().optional(),
         prerequisites: z.string().optional(),
+        resourceTypes: z.string().optional(),
+        finalLearningOutcome: z.string().optional(),
+        questionFormat: z.string().optional(),
       }),
     )
     .mutation(async ({ ctx, input }) => {
@@ -595,22 +609,21 @@ export const campaignRouter = createTRPCRouter({
         });
       }
 
-      // For temporary campaign generation, we'll use a mock campaign object
-      // This allows us to generate content without creating a database record first
-      const mockCampaign = {
-        title: "Temporary Campaign",
-        topic: "General",
-        description: "Temporary description",
-        targetAudience: "General learners",
-        startingBloomLevel: 1,
-        targetBloomLevel: 3,
-        focusAreas: [],
-        estimatedDuration: 7,
-        tone: "professional",
+      // Use the actual campaign data from input
+      const campaignData = {
+        title: input.title,
+        topic: input.topic,
+        description: input.description,
+        targetAudience: input.targetAudience || "General learners",
+        startingBloomLevel: input.startingBloomLevel,
+        targetBloomLevel: input.targetBloomLevel,
+        focusAreas: input.focusAreas,
+        estimatedDuration: input.estimatedDuration || 7,
+        tone: input.tone || "professional",
       };
 
-      // Build the AI prompt
-      const prompt = buildCampaignPrompt(mockCampaign, input);
+      // Build the AI prompt with actual campaign data
+      const prompt = buildCampaignPrompt(campaignData, input);
 
       try {
         // Call Gemini API
