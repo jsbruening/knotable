@@ -90,6 +90,14 @@ export function AIGenerationStep() {
   const generateContentMutation = api.campaign.generateContent.useMutation();
   const saveDraftMutation = api.campaign.saveDraft.useMutation();
 
+  // Initialize the prompt when component loads
+  useEffect(() => {
+    if (!aiPrompt) {
+      const prompt = buildPrompt();
+      setAIPrompt(prompt);
+    }
+  }, [campaignData, aiParams, aiPrompt, setAIPrompt]);
+
   // Listen for navigation events from the header
   useEffect(() => {
     const handleNext = () => {
