@@ -82,7 +82,7 @@ export function PromptEditorModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-h-[90vh] max-w-4xl overflow-hidden">
+      <DialogContent className="max-h-[90vh] max-w-4xl overflow-hidden bg-app-gradient border-white/20">
         <DialogHeader>
           <DialogTitle className="flex items-center text-white">
             <Edit3 className="mr-2 h-5 w-5 text-blue-400" />
@@ -170,7 +170,7 @@ export function PromptEditorModal({
                   variant="outline"
                   size="sm"
                   onClick={handleReset}
-                  className="text-white/80 hover:text-white"
+                  className="border-white/20 text-white/80 hover:text-white hover:bg-white/10"
                 >
                   <RotateCcw className="mr-2 h-4 w-4" />
                   Reset
@@ -186,6 +186,7 @@ export function PromptEditorModal({
                 variant="outline"
                 onClick={onClose}
                 disabled={isGenerating}
+                className="border-white/20 text-white hover:bg-white/10"
               >
                 Cancel
               </Button>
