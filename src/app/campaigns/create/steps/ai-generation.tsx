@@ -120,12 +120,18 @@ LEARNING PARAMETERS:
 - Difficulty Preference: ${aiParams.difficultyPreference || "Balanced"}
 - Content Format: ${aiParams.contentFormat || "Mixed"}
 - Time Commitment: ${aiParams.timeCommitment || "Flexible"}
-- Prerequisites: ${aiParams.prerequisites || "None specified"}
+- Prerequisites: ${aiParams.prerequisites || "Working knowledge of HTML, CSS, and modern JavaScript (including basic ES6+ features like arrow functions and let/const)"}
 
 ADVANCED CONFIGURATION:
 - Resource Types: ${aiParams.resourceTypes || "Mixed formats"}
 - Final Learning Outcome: ${aiParams.finalLearningOutcome || "Comprehensive understanding"}
 - Question Format: ${aiParams.questionFormat || "Multiple choice"}
+
+CODE STANDARDS:
+- Syntax: All explanations and examples must exclusively use modern Functional Components and Hooks syntax
+- Language: Use modern JavaScript (ES6+) for all code, defaulting to JSX
+- TypeScript: If TypeScript is used, it should be introduced as a separate, clearly marked lesson/topic
+- Prohibited: Class components and deprecated lifecycles are strictly forbidden
 
 DOMAIN STANDARDS:
 - Use current, industry-standard practices for the specified topic
