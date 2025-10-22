@@ -32,7 +32,6 @@ import { api } from "~/trpc/react";
 import { useCampaignWizardStore } from "~/stores/campaign-wizard";
 import { toast } from "sonner";
 import { ProgressiveLoading } from "~/components/ui/progressive-loading";
-import { SizeWarning } from "~/components/ui/size-warning";
 import { PromptEditorModal } from "~/components/ui/prompt-editor-modal";
 
 const LEARNING_STYLES = [
@@ -732,17 +731,6 @@ Create a comprehensive learning campaign with exactly ${campaignData.targetBloom
         </Card>
       )}
 
-      {/* Size Warning */}
-      {generatedContent && (
-        <SizeWarning
-          contentSize={JSON.stringify(generatedContent).length}
-          estimatedTime={
-            generatedContent.milestones?.length > 5
-              ? "2-3 seconds"
-              : "1-2 seconds"
-          }
-        />
-      )}
 
       {/* Navigation Buttons */}
       <div className="mt-6 flex justify-between">
