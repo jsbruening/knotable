@@ -7,6 +7,7 @@ import {
 import { TRPCError } from "@trpc/server";
 import fetch from "node-fetch";
 import { generateCampaignContent } from "~/lib/gemini";
+import { discoverResourcesForMilestone, discoverResourcesForSubMilestone } from "~/lib/resource-discovery";
 
 // Helper function to build AI prompt for campaign generation
 function buildCampaignPrompt(campaign: any, params: any): string {
@@ -125,7 +126,7 @@ function getBloomLevelName(level: number): string {
 }
 
 export const campaignRouter = createTRPCRouter({
-  // Validate and upsert resources for a milestone from existing externalResources
+  // Discover and add fresh resources for a milestone
   refreshResources: protectedProcedure
     .input(
       z.object({
@@ -135,80 +136,189 @@ export const campaignRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       const milestone = await ctx.db.milestone.findUnique({
         where: { id: input.milestoneId },
+        include: {
+          campaign: true,
+          subMilestones: true,
+        },
       });
 
       if (!milestone) {
         throw new TRPCError({ code: "NOT_FOUND", message: "Milestone not found" });
       }
 
-      const urls: string[] = milestone.externalResources || [];
-      const results: { url: string; ok: boolean; type: string; title: string; provider?: string }[] = [];
+      const { campaign } = milestone;
 
-      for (const url of urls) {
-        try {
-          const res = await fetch(url, { method: "HEAD", redirect: "follow", timeout: 5000 as any });
-          const ok = res.status >= 200 && res.status < 400;
-          const contentType = (res.headers.get("content-type") || "").toLowerCase();
-          const type = contentType.startsWith("video/")
-            ? "video"
-            : contentType.includes("pdf")
-            ? "pdf"
-            : "article";
+      // Discover resources for the main milestone
+      const milestoneResources = await discoverResourcesForMilestone({
+        topic: campaign.topic,
+        milestoneTitle: milestone.title,
+        milestoneObjective: milestone.objective,
+        bloomLevel: milestone.bloomLevel,
+        focusAreas: campaign.focusAreas,
+        resourceTypes: campaign.resourceTypes || [],
+      });
 
-          if (!ok) {
-            results.push({ url, ok: false, type, title: url });
-            continue;
+      // Discover resources for each sub-milestone
+      const subMilestoneResources = await Promise.all(
+        milestone.subMilestones.map(async (subMilestone) => {
+          const resources = await discoverResourcesForSubMilestone({
+            topic: campaign.topic,
+            milestoneTitle: milestone.title,
+            milestoneObjective: milestone.objective,
+            bloomLevel: milestone.bloomLevel,
+            focusAreas: campaign.focusAreas,
+            resourceTypes: campaign.resourceTypes || [],
+            subMilestoneTitle: subMilestone.title,
+            subMilestoneObjective: subMilestone.objective,
+          });
+          return { subMilestoneId: subMilestone.id, resources };
+        })
+      );
+
+      // Validate and save main milestone resources
+      const validatedMilestoneResources = await Promise.all(
+        milestoneResources.map(async (resource) => {
+          try {
+            // Quick HEAD request to validate URL
+            const response = await fetch(resource.url, { 
+              method: "HEAD", 
+              redirect: "follow", 
+              timeout: 5000 as any 
+            });
+            const isAlive = response.status >= 200 && response.status < 400;
+
+            return await ctx.db.resource.upsert({
+              where: {
+                milestoneId_url: { 
+                  milestoneId: milestone.id, 
+                  url: resource.url 
+                },
+              },
+              update: {
+                type: resource.type,
+                title: resource.title,
+                provider: resource.provider,
+                isAlive,
+                lastCheckedAt: new Date(),
+              },
+              create: {
+                milestoneId: milestone.id,
+                url: resource.url,
+                type: resource.type,
+                title: resource.title,
+                provider: resource.provider,
+                isAlive,
+                lastCheckedAt: new Date(),
+              },
+            });
+          } catch (error) {
+            console.error(`Error validating resource ${resource.url}:`, error);
+            return await ctx.db.resource.upsert({
+              where: {
+                milestoneId_url: { 
+                  milestoneId: milestone.id, 
+                  url: resource.url 
+                },
+              },
+              update: {
+                type: resource.type,
+                title: resource.title,
+                provider: resource.provider,
+                isAlive: false,
+                lastCheckedAt: new Date(),
+              },
+              create: {
+                milestoneId: milestone.id,
+                url: resource.url,
+                type: resource.type,
+                title: resource.title,
+                provider: resource.provider,
+                isAlive: false,
+                lastCheckedAt: new Date(),
+              },
+            });
           }
+        })
+      );
 
-          // Fallback title from URL
-          const { hostname, pathname } = new URL(url);
-          const last = decodeURIComponent(pathname.split("/").filter(Boolean).pop() || hostname)
-            .replace(/[-_]+/g, " ")
-            .replace(/\.[a-z0-9]+$/i, "");
-          const title = last || hostname;
+      // Validate and save sub-milestone resources
+      const validatedSubMilestoneResources = await Promise.all(
+        subMilestoneResources.flatMap(({ subMilestoneId, resources }) =>
+          resources.map(async (resource) => {
+            try {
+              const response = await fetch(resource.url, { 
+                method: "HEAD", 
+                redirect: "follow", 
+                timeout: 5000 as any 
+              });
+              const isAlive = response.status >= 200 && response.status < 400;
 
-          await ctx.db.resource.upsert({
-            where: {
-              milestoneId_url: { milestoneId: milestone.id, url },
-            },
-            update: {
-              type,
-              title,
-              provider: hostname.replace(/^www\./, ""),
-              isAlive: true,
-              lastCheckedAt: new Date(),
-            },
-            create: {
-              milestoneId: milestone.id,
-              url,
-              type,
-              title,
-              provider: hostname.replace(/^www\./, ""),
-              isAlive: true,
-              lastCheckedAt: new Date(),
-            },
-          });
+              return await ctx.db.resource.upsert({
+                where: {
+                  milestoneId_url: { 
+                    milestoneId: subMilestoneId, 
+                    url: resource.url 
+                  },
+                },
+                update: {
+                  type: resource.type,
+                  title: resource.title,
+                  provider: resource.provider,
+                  isAlive,
+                  lastCheckedAt: new Date(),
+                },
+                create: {
+                  milestoneId: subMilestoneId,
+                  url: resource.url,
+                  type: resource.type,
+                  title: resource.title,
+                  provider: resource.provider,
+                  isAlive,
+                  lastCheckedAt: new Date(),
+                },
+              });
+            } catch (error) {
+              console.error(`Error validating sub-milestone resource ${resource.url}:`, error);
+              return await ctx.db.resource.upsert({
+                where: {
+                  milestoneId_url: { 
+                    milestoneId: subMilestoneId, 
+                    url: resource.url 
+                  },
+                },
+                update: {
+                  type: resource.type,
+                  title: resource.title,
+                  provider: resource.provider,
+                  isAlive: false,
+                  lastCheckedAt: new Date(),
+                },
+                create: {
+                  milestoneId: subMilestoneId,
+                  url: resource.url,
+                  type: resource.type,
+                  title: resource.title,
+                  provider: resource.provider,
+                  isAlive: false,
+                  lastCheckedAt: new Date(),
+                },
+              });
+            }
+          })
+        )
+      );
 
-          results.push({ url, ok: true, type, title, provider: hostname });
-        } catch {
-          await ctx.db.resource.upsert({
-            where: { milestoneId_url: { milestoneId: milestone.id, url } },
-            update: { isAlive: false, lastCheckedAt: new Date() },
-            create: {
-              milestoneId: milestone.id,
-              url,
-              type: "article",
-              title: url,
-              isAlive: false,
-              lastCheckedAt: new Date(),
-            },
-          });
-          results.push({ url, ok: false, type: "article", title: url });
-        }
-      }
+      const allResources = [...validatedMilestoneResources, ...validatedSubMilestoneResources];
+      const liveResources = allResources.filter(r => r.isAlive);
 
-      const saved = await ctx.db.resource.findMany({ where: { milestoneId: milestone.id, isAlive: true } });
-      return { count: saved.length, results, resources: saved };
+      return { 
+        success: true,
+        message: `Discovered ${allResources.length} resources (${liveResources.length} live)`,
+        totalResources: allResources.length,
+        liveResources: liveResources.length,
+        deadResources: allResources.length - liveResources.length,
+        resources: liveResources
+      };
     }),
   // Get all public campaigns
   getAll: publicProcedure

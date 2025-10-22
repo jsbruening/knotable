@@ -133,13 +133,15 @@ export default function LearningSessionPage() {
 
   const utils = api.useUtils();
   const refreshResourcesMutation = api.campaign.refreshResources.useMutation({
-    onSuccess: async () => {
-      toast.success("Resources refreshed");
+    onSuccess: (result) => {
+      toast.success(result.message);
       if (sessionId) {
-        await utils.campaign.getLearningSession.invalidate({ sessionId });
+        utils.campaign.getLearningSession.invalidate({ sessionId });
       }
     },
-    onError: (e) => toast.error(e.message),
+    onError: (error) => {
+      toast.error(error.message);
+    },
   });
 
   // Get session data
@@ -213,8 +215,8 @@ export default function LearningSessionPage() {
 
   const { milestone, campaign } = session;
   // Use validated resources from Resource table, fallback to externalResources if none exist
-  const resources = milestone.resources && milestone.resources.length > 0 
-    ? milestone.resources 
+  const resources = milestone.resources && milestone.resources.length > 0
+    ? milestone.resources
     : milestone.externalResources.map(url => ({ url, title: url, type: "article", isAlive: true }));
   const progressPercentage = (completedResources.length / resources.length) * 100;
 
@@ -258,9 +260,10 @@ export default function LearningSessionPage() {
                   variant="outline"
                   size="sm"
                   onClick={() => refreshResourcesMutation.mutate({ milestoneId })}
+                  disabled={refreshResourcesMutation.isPending}
                   className="border-white/20 text-white hover:bg-white/10"
                 >
-                  Refresh resources
+                  {refreshResourcesMutation.isPending ? "Discovering..." : "Discover Resources"}
                 </Button>
               </div>
               <Progress value={progressPercentage} className="w-48 mb-2" />
@@ -289,20 +292,20 @@ export default function LearningSessionPage() {
                   const resourceUrl = typeof resource === 'string' ? resource : resource.url;
                   const resourceType = typeof resource === 'string' ? getResourceType(resource) : resource.type;
                   const isCompleted = completedResources.includes(resourceUrl);
-                  const readable = typeof resource === 'string' 
-                    ? getReadableResourceTitle(resource) 
+                  const readable = typeof resource === 'string'
+                    ? getReadableResourceTitle(resource)
                     : { title: resource.title, subtitle: resource.provider };
 
                   const isDead = typeof resource === 'object' && !resource.isAlive;
-                  
+
                   return (
                     <div
                       key={index}
                       className={`p-4 rounded-lg border transition-all ${isCompleted
                         ? "bg-green-500/20 border-green-500/50"
                         : isDead
-                        ? "bg-red-500/10 border-red-500/30 opacity-60"
-                        : "bg-white/5 border-white/10 hover:bg-white/10"
+                          ? "bg-red-500/10 border-red-500/30 opacity-60"
+                          : "bg-white/5 border-white/10 hover:bg-white/10"
                         }`}
                     >
                       <div className="flex items-center justify-between">
