@@ -125,22 +125,22 @@ export function JoinTeams({ onNext, onPrevious, data }: JoinTeamsProps) {
 
       {/* Create Team Button */}
       <div className="text-center">
-        <Drawer open={isCreateDrawerOpen} onOpenChange={setIsCreateDrawerOpen}>
+        <Drawer open={isCreateDrawerOpen} onOpenChange={setIsCreateDrawerOpen} direction="right">
           <DrawerTrigger asChild>
             <Button variant="outline" className="mb-4 border-white/20 text-white hover:bg-white/10">
               <Plus className="mr-2 h-4 w-4" />
               Create New Team
             </Button>
           </DrawerTrigger>
-          <DrawerContent className="bg-white/10 border-white/20">
-            <DrawerHeader>
+          <DrawerContent className="bg-app-gradient border-white/20 h-full w-[400px] ml-auto">
+            <DrawerHeader className="px-6 pt-6">
               <DrawerTitle className="text-white">Create a New Team</DrawerTitle>
               <DrawerDescription className="text-white/80">
                 Create a team to collaborate with others on your learning
                 journey.
               </DrawerDescription>
             </DrawerHeader>
-            <div className="px-4 pb-4 space-y-4">
+            <div className="px-6 pb-6 space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="teamName" className="text-white">Team Name</Label>
                 <Input
@@ -153,7 +153,7 @@ export function JoinTeams({ onNext, onPrevious, data }: JoinTeamsProps) {
                     }))
                   }
                   placeholder="Enter team name"
-                  className="text-white placeholder:text-white/60 focus:border-white/40"
+                  className="bg-white/10 border-white/20 text-white placeholder:text-white/60 focus:border-white/40"
                 />
               </div>
               <div className="space-y-2">
@@ -169,7 +169,7 @@ export function JoinTeams({ onNext, onPrevious, data }: JoinTeamsProps) {
                   }
                   placeholder="Describe your team's goals..."
                   rows={3}
-                  className="text-white placeholder:text-white/60 focus:border-white/40"
+                  className="bg-white/10 border-white/20 text-white placeholder:text-white/60 focus:border-white/40"
                 />
               </div>
               <div className="flex justify-end space-x-2">
