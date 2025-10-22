@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "~/components/ui/card";
 import { Button } from "~/components/ui/button";
 import { Switch } from "~/components/ui/switch";
@@ -10,10 +11,21 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "~
 import { AlertTriangle, Settings, Zap, Brain, RefreshCw } from "lucide-react";
 import { toast } from "sonner";
 import { api } from "~/trpc/react";
+import { useAuth } from "~/components/auth/auth-provider";
+import Link from "next/link";
 
 export default function AdminSettings() {
   const [isGeminiDisabled, setIsGeminiDisabled] = useState(false);
   const [selectedLLM, setSelectedLLM] = useState("auto");
+  const { user, loading } = useAuth();
+  const router = useRouter();
+
+  // Redirect to signin if not authenticated
+  useEffect(() => {
+    if (!loading && !user) {
+      router.replace("/auth/signin");
+    }
+  }, [loading, user, router]);
 
   // Fetch admin settings
   const { data: adminSettings, refetch: refetchSettings } = api.adminSettings.getAll.useQuery();
@@ -67,6 +79,48 @@ export default function AdminSettings() {
       description: "Primary LLM provider for content generation",
     });
   };
+
+  // Show loading spinner while checking authentication
+  if (loading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-app-gradient">
+        <div className="h-8 w-8 animate-spin rounded-full border-4 border-white/30 border-t-blue-400" />
+      </div>
+    );
+  }
+
+  // Show loading spinner while not authenticated (will redirect)
+  if (!user) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-app-gradient">
+        <div className="h-8 w-8 animate-spin rounded-full border-4 border-white/30 border-t-blue-400" />
+      </div>
+    );
+  }
+
+  // Check if user is admin
+  const { data: currentUser } = api.auth.getCurrentUser.useQuery();
+
+  // Show access denied if not admin
+  if (!currentUser?.isAdmin) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-app-gradient">
+        <Card className="mx-auto max-w-md bg-white/10 border-white/20">
+          <CardHeader className="text-center">
+            <CardTitle className="text-white">Access Denied</CardTitle>
+            <CardDescription className="text-white/80">
+              Only administrators can access admin settings.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Button asChild className="w-full bg-blue-600 hover:bg-blue-700 text-white">
+              <Link href="/dashboard">Return to Dashboard</Link>
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-app-gradient">
