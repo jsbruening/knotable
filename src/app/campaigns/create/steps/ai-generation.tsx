@@ -267,7 +267,7 @@ Create a comprehensive learning campaign with exactly ${campaignData.targetBloom
         startingBloomLevel: campaignData.startingBloomLevel,
         targetBloomLevel: campaignData.targetBloomLevel,
         focusAreas: campaignData.focusAreas || [],
-        estimatedDuration: campaignData.estimatedDuration,
+        estimatedDuration: Number(campaignData.estimatedDuration) || 7,
         tone: campaignData.tone,
         // Learning parameters
         ...aiParams,
@@ -360,7 +360,7 @@ Create a comprehensive learning campaign with exactly ${campaignData.targetBloom
         startingBloomLevel: campaignData.startingBloomLevel,
         targetBloomLevel: campaignData.targetBloomLevel,
         focusAreas: campaignData.focusAreas || [],
-        estimatedDuration: campaignData.estimatedDuration,
+        estimatedDuration: Number(campaignData.estimatedDuration) || 7,
         tone: campaignData.tone,
         // Learning parameters
         ...aiParams,
@@ -417,7 +417,7 @@ Create a comprehensive learning campaign with exactly ${campaignData.targetBloom
   // Calculate total assessment questions from milestones and lessons
   const getTotalAssessmentQuestions = (content: any) => {
     if (!content?.milestones) return 0;
-    
+
     let totalQuestions = 0;
     content.milestones.forEach((milestone: any) => {
       // Count milestone-level questions
