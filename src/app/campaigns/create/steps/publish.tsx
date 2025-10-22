@@ -44,7 +44,10 @@ export function PublishStep() {
       setIsPublishing(true);
 
       // First create the campaign draft
-      const campaign = await createDraftMutation.mutateAsync(campaignData);
+      const campaign = await createDraftMutation.mutateAsync({
+        ...campaignData,
+        estimatedDuration: campaignData.estimatedDuration ? Number(campaignData.estimatedDuration) : undefined,
+      });
 
       // Update campaign with final scope
       const updateData: any = {
