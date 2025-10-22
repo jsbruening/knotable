@@ -1051,29 +1051,26 @@ export const campaignRouter = createTRPCRouter({
       const userId = ctx.user.id;
       const { campaignId, milestoneId } = input;
 
-      // Check if user is part of the campaign, auto-enroll if not
-      let userCampaign = await ctx.db.userCampaign.findUnique({
+      // Auto-enroll user in the campaign (upsert to handle race conditions)
+      const userCampaign = await ctx.db.userCampaign.upsert({
         where: {
           userId_campaignId: {
             userId,
             campaignId,
           },
         },
+        update: {
+          lastActiveAt: new Date(),
+        },
+        create: {
+          userId,
+          campaignId,
+          currentMilestone: 1,
+          completedMilestones: [],
+          joinedAt: new Date(),
+          lastActiveAt: new Date(),
+        },
       });
-
-      if (!userCampaign) {
-        // Auto-enroll user in the campaign
-        userCampaign = await ctx.db.userCampaign.create({
-          data: {
-            userId,
-            campaignId,
-            currentMilestone: 1,
-            completedMilestones: [],
-            joinedAt: new Date(),
-            lastActiveAt: new Date(),
-          },
-        });
-      }
 
       // Check if milestone exists and belongs to campaign
       const milestone = await ctx.db.milestone.findFirst({
