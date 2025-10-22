@@ -241,7 +241,7 @@ export const campaignRouter = createTRPCRouter({
         })
       );
 
-      // Validate and save sub-milestone resources
+      // Validate and save sub-milestone resources (save to main milestone)
       const validatedSubMilestoneResources = await Promise.all(
         subMilestoneResources.flatMap(({ subMilestoneId, resources }) =>
           resources.map(async (resource) => {
@@ -256,7 +256,7 @@ export const campaignRouter = createTRPCRouter({
               return await ctx.db.resource.upsert({
                 where: {
                   milestoneId_url: { 
-                    milestoneId: subMilestoneId, 
+                    milestoneId: milestone.id, // Save to main milestone, not sub-milestone
                     url: resource.url 
                   },
                 },
@@ -268,7 +268,7 @@ export const campaignRouter = createTRPCRouter({
                   lastCheckedAt: new Date(),
                 },
                 create: {
-                  milestoneId: subMilestoneId,
+                  milestoneId: milestone.id, // Save to main milestone, not sub-milestone
                   url: resource.url,
                   type: resource.type,
                   title: resource.title,
@@ -282,7 +282,7 @@ export const campaignRouter = createTRPCRouter({
               return await ctx.db.resource.upsert({
                 where: {
                   milestoneId_url: { 
-                    milestoneId: subMilestoneId, 
+                    milestoneId: milestone.id, // Save to main milestone, not sub-milestone
                     url: resource.url 
                   },
                 },
@@ -294,7 +294,7 @@ export const campaignRouter = createTRPCRouter({
                   lastCheckedAt: new Date(),
                 },
                 create: {
-                  milestoneId: subMilestoneId,
+                  milestoneId: milestone.id, // Save to main milestone, not sub-milestone
                   url: resource.url,
                   type: resource.type,
                   title: resource.title,
