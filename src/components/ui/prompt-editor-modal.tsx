@@ -102,13 +102,13 @@ export function PromptEditorModal({
               <span className="text-sm text-white/80">Prompt Statistics:</span>
             </div>
             <div className="flex gap-4">
-              <Badge variant="outline" className="text-xs">
+              <Badge variant="outline" className="text-xs border-white/30 text-white bg-white/10">
                 {stats.words} words
               </Badge>
-              <Badge variant="outline" className="text-xs">
+              <Badge variant="outline" className="text-xs border-white/30 text-white bg-white/10">
                 {stats.characters.toLocaleString()} characters
               </Badge>
-              <Badge variant="outline" className="text-xs">
+              <Badge variant="outline" className="text-xs border-white/30 text-white bg-white/10">
                 {stats.lines} lines
               </Badge>
             </div>
@@ -123,7 +123,7 @@ export function PromptEditorModal({
               id="prompt-editor"
               value={editedPrompt}
               onChange={(e) => handlePromptChange(e.target.value)}
-              className="h-full min-h-[400px] resize-none border-white/20 bg-white/10 font-mono text-sm text-white placeholder:text-white/50"
+              className="h-full min-h-[400px] resize-none border-white/20 bg-white/10 font-mono text-sm text-white placeholder:text-white/50 overflow-y-auto"
               placeholder="Enter your AI prompt here..."
             />
           </div>
