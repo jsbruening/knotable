@@ -484,8 +484,14 @@ export default function CampaignDetailPage() {
                           )}
 
                         <div className="flex justify-end">
-                          <Button variant="outline" size="sm">
-                            Start Learning
+                          <Button 
+                            variant="outline" 
+                            size="sm"
+                            asChild
+                          >
+                            <Link href={`/campaigns/${campaignId}/learn/${milestone.id}`}>
+                              Start Learning
+                            </Link>
                           </Button>
                         </div>
                       </div>

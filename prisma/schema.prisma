@@ -36,6 +36,7 @@ model User {
     campaigns           UserCampaign[]
     teams               UserTeam[]
     unlockables         UserUnlockable[]
+    learningSessions    LearningSession[]
 
     @@index([email])
     @@index([totalPoints])
@@ -69,6 +70,7 @@ model Campaign {
     milestones         Milestone[]
     teamChallenges     TeamChallenge[]
     users              UserCampaign[]
+    learningSessions   LearningSession[]
 
     @@index([isActive])
     @@index([isPublic])
@@ -108,6 +110,7 @@ model Milestone {
     subMilestones     SubMilestone[]
     quizzes           Quiz[]
     teamChallenges    TeamChallenge[]
+    learningSessions  LearningSession[]
 
     @@index([campaignId])
     @@index([bloomLevel])
@@ -343,4 +346,49 @@ model Notification {
     @@index([userId])
     @@index([isRead])
     @@index([createdAt])
+}
+
+model LearningSession {
+    id                String    @id @default(cuid())
+    userId            String
+    campaignId        String
+    milestoneId       String
+    startedAt         DateTime  @default(now())
+    completedAt       DateTime?
+    timeSpent         Int       @default(0) // in minutes
+    progress          Float     @default(0) // 0-100%
+    isActive          Boolean   @default(true)
+    completedResources String[] @default([]) // Track completed resource URLs
+    resourceProgress  Json?     // Detailed progress per resource
+    
+    user              User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+    campaign          Campaign  @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+    milestone         Milestone @relation(fields: [milestoneId], references: [id], onDelete: Cascade)
+    resourceProgresses ResourceProgress[]
+    
+    @@unique([userId, campaignId, milestoneId])
+    @@index([userId])
+    @@index([campaignId])
+    @@index([milestoneId])
+    @@index([isActive])
+    @@index([startedAt])
+}
+
+model ResourceProgress {
+    id           String          @id @default(cuid())
+    sessionId    String
+    resourceUrl  String
+    resourceType String?         // video, article, tool, etc.
+    startedAt    DateTime        @default(now())
+    completedAt  DateTime?
+    timeSpent    Int             @default(0) // in minutes
+    progress     Float           @default(0) // 0-100%
+    isCompleted  Boolean         @default(false)
+    
+    session      LearningSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+    
+    @@unique([sessionId, resourceUrl])
+    @@index([sessionId])
+    @@index([resourceUrl])
+    @@index([isCompleted])
 }

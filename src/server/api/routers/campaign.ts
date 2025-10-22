@@ -1038,4 +1038,279 @@ export const campaignRouter = createTRPCRouter({
 
       return campaign;
     }),
+
+  // Learning Session endpoints
+  startLearningSession: protectedProcedure
+    .input(
+      z.object({
+        campaignId: z.string(),
+        milestoneId: z.string(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      const { userId } = ctx;
+      const { campaignId, milestoneId } = input;
+
+      // Check if user is part of the campaign
+      const userCampaign = await ctx.db.userCampaign.findUnique({
+        where: {
+          userId_campaignId: {
+            userId,
+            campaignId,
+          },
+        },
+      });
+
+      if (!userCampaign) {
+        throw new TRPCError({
+          code: "FORBIDDEN",
+          message: "You must join the campaign before starting a learning session",
+        });
+      }
+
+      // Check if milestone exists and belongs to campaign
+      const milestone = await ctx.db.milestone.findFirst({
+        where: {
+          id: milestoneId,
+          campaignId,
+        },
+      });
+
+      if (!milestone) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Milestone not found",
+        });
+      }
+
+      // Check if there's already an active learning session
+      const existingSession = await ctx.db.learningSession.findFirst({
+        where: {
+          userId,
+          campaignId,
+          milestoneId,
+          isActive: true,
+        },
+      });
+
+      if (existingSession) {
+        return existingSession;
+      }
+
+      // Create new learning session
+      const learningSession = await ctx.db.learningSession.create({
+        data: {
+          userId,
+          campaignId,
+          milestoneId,
+          startedAt: new Date(),
+          isActive: true,
+        },
+        include: {
+          milestone: true,
+          campaign: true,
+        },
+      });
+
+      return learningSession;
+    }),
+
+  updateLearningSession: protectedProcedure
+    .input(
+      z.object({
+        sessionId: z.string(),
+        progress: z.number().min(0).max(100).optional(),
+        timeSpent: z.number().min(0).optional(),
+        completedResources: z.array(z.string()).optional(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      const { userId } = ctx;
+      const { sessionId, progress, timeSpent, completedResources } = input;
+
+      // Verify session belongs to user
+      const session = await ctx.db.learningSession.findFirst({
+        where: {
+          id: sessionId,
+          userId,
+          isActive: true,
+        },
+      });
+
+      if (!session) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Learning session not found",
+        });
+      }
+
+      // Update session
+      const updatedSession = await ctx.db.learningSession.update({
+        where: { id: sessionId },
+        data: {
+          ...(progress !== undefined && { progress }),
+          ...(timeSpent !== undefined && { timeSpent }),
+          ...(completedResources !== undefined && { completedResources }),
+        },
+        include: {
+          milestone: true,
+          campaign: true,
+        },
+      });
+
+      return updatedSession;
+    }),
+
+  completeLearningSession: protectedProcedure
+    .input(
+      z.object({
+        sessionId: z.string(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      const { userId } = ctx;
+      const { sessionId } = input;
+
+      // Verify session belongs to user
+      const session = await ctx.db.learningSession.findFirst({
+        where: {
+          id: sessionId,
+          userId,
+          isActive: true,
+        },
+        include: {
+          milestone: true,
+          campaign: true,
+        },
+      });
+
+      if (!session) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Learning session not found",
+        });
+      }
+
+      // Calculate total time spent
+      const timeSpent = Math.floor(
+        (Date.now() - session.startedAt.getTime()) / (1000 * 60)
+      );
+
+      // Complete the session
+      const completedSession = await ctx.db.learningSession.update({
+        where: { id: sessionId },
+        data: {
+          isActive: false,
+          completedAt: new Date(),
+          progress: 100,
+          timeSpent,
+        },
+        include: {
+          milestone: true,
+          campaign: true,
+        },
+      });
+
+      // Update user's campaign progress
+      const userCampaign = await ctx.db.userCampaign.findUnique({
+        where: {
+          userId_campaignId: {
+            userId,
+            campaignId: session.campaignId,
+          },
+        },
+      });
+
+      if (userCampaign) {
+        // Add milestone to completed milestones
+        const completedMilestones = [...userCampaign.completedMilestones];
+        if (!completedMilestones.includes(session.milestone.order)) {
+          completedMilestones.push(session.milestone.order);
+        }
+
+        // Update current milestone to next one
+        const nextMilestone = await ctx.db.milestone.findFirst({
+          where: {
+            campaignId: session.campaignId,
+            order: { gt: session.milestone.order },
+          },
+          orderBy: { order: "asc" },
+        });
+
+        await ctx.db.userCampaign.update({
+          where: {
+            userId_campaignId: {
+              userId,
+              campaignId: session.campaignId,
+            },
+          },
+          data: {
+            completedMilestones,
+            currentMilestone: nextMilestone?.order ?? userCampaign.currentMilestone,
+            lastActiveAt: new Date(),
+          },
+        });
+
+        // Award points for milestone completion
+        const pointsEarned = 50; // Base points for milestone completion
+        await ctx.db.user.update({
+          where: { id: userId },
+          data: {
+            totalPoints: { increment: pointsEarned },
+          },
+        });
+
+        // Log points earned
+        await ctx.db.pointsLog.create({
+          data: {
+            userId,
+            points: pointsEarned,
+            reason: `Completed milestone: ${session.milestone.title}`,
+            metadata: {
+              milestoneId: session.milestone.id,
+              campaignId: session.campaignId,
+            },
+          },
+        });
+      }
+
+      return completedSession;
+    }),
+
+  getLearningSession: protectedProcedure
+    .input(
+      z.object({
+        sessionId: z.string(),
+      })
+    )
+    .query(async ({ ctx, input }) => {
+      const { userId } = ctx;
+      const { sessionId } = input;
+
+      const session = await ctx.db.learningSession.findFirst({
+        where: {
+          id: sessionId,
+          userId,
+        },
+        include: {
+          milestone: {
+            include: {
+              subMilestones: true,
+              quizzes: true,
+            },
+          },
+          campaign: true,
+          resourceProgresses: true,
+        },
+      });
+
+      if (!session) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Learning session not found",
+        });
+      }
+
+      return session;
+    }),
 });
