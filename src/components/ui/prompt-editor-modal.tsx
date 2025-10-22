@@ -26,6 +26,8 @@ import {
   Brain,
   CheckCircle,
   RotateCcw,
+  Copy,
+  Check,
 } from "lucide-react";
 
 interface PromptEditorModalProps {
@@ -47,6 +49,7 @@ export function PromptEditorModal({
 }: PromptEditorModalProps) {
   const [editedPrompt, setEditedPrompt] = useState(prompt);
   const [hasChanges, setHasChanges] = useState(false);
+  const [isCopied, setIsCopied] = useState(false);
 
   // Update editedPrompt when prompt prop changes
   useEffect(() => {
@@ -69,6 +72,16 @@ export function PromptEditorModal({
     onGenerate(editedPrompt);
     setHasChanges(false);
     onClose();
+  };
+
+  const handleCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(editedPrompt);
+      setIsCopied(true);
+      setTimeout(() => setIsCopied(false), 2000); // Reset after 2 seconds
+    } catch (err) {
+      console.error('Failed to copy text: ', err);
+    }
   };
 
   const handleReset = () => {
@@ -122,9 +135,29 @@ export function PromptEditorModal({
 
           {/* Prompt Editor */}
           <div className="min-h-0 flex-1">
-            <Label htmlFor="prompt-editor" className="mb-2 block text-white">
-              AI Prompt
-            </Label>
+            <div className="mb-2 flex items-center justify-between">
+              <Label htmlFor="prompt-editor" className="text-white">
+                AI Prompt
+              </Label>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleCopy}
+                className="border-white/20 text-white hover:bg-white/10"
+              >
+                {isCopied ? (
+                  <>
+                    <Check className="mr-1 h-3 w-3" />
+                    Copied!
+                  </>
+                ) : (
+                  <>
+                    <Copy className="mr-1 h-3 w-3" />
+                    Copy
+                  </>
+                )}
+              </Button>
+            </div>
             <Textarea
               id="prompt-editor"
               value={editedPrompt}
