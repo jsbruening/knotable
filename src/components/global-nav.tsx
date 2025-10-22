@@ -26,6 +26,12 @@ export function GlobalNav() {
 
   const { data: currentUser } = api.auth.getCurrentUser.useQuery();
 
+  // Don't show navigation on auth pages
+  const isAuthPage = pathname.startsWith("/auth/");
+  if (isAuthPage) {
+    return null;
+  }
+
   const navigation = [
     { name: "Dashboard", href: "/dashboard", icon: Home },
     { name: "Campaigns", href: "/campaigns", icon: Target },
