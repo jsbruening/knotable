@@ -94,7 +94,7 @@ export function PromptEditorModal({
           </DialogDescription>
         </DialogHeader>
 
-        <div className="flex h-full flex-col space-y-4 overflow-hidden">
+        <div className="flex h-full flex-col space-y-4 overflow-y-auto">
           {/* Prompt Stats */}
           <div className="flex items-center gap-4 rounded-lg bg-white/10 p-3">
             <div className="flex items-center gap-2">
