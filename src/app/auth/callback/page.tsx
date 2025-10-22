@@ -29,7 +29,9 @@ export default function AuthCallback() {
     }
 
     // Otherwise, follow normal flow
-    if (currentUser.onboardingCompleted) {
+    // Check if user already has a profile set up (has displayName)
+    // or if onboarding was explicitly completed
+    if (currentUser.onboardingCompleted || currentUser.displayName) {
       router.replace("/dashboard");
     } else {
       router.replace("/onboarding");
