@@ -127,11 +127,11 @@ ADVANCED CONFIGURATION:
 - Final Learning Outcome: ${aiParams.finalLearningOutcome || "Comprehensive understanding"}
 - Question Format: ${aiParams.questionFormat || "Multiple choice"}
 
-CODE STANDARDS:
+${campaignData.topic.toLowerCase().includes('react') || campaignData.topic.toLowerCase().includes('javascript') || campaignData.topic.toLowerCase().includes('programming') || campaignData.topic.toLowerCase().includes('web development') || campaignData.topic.toLowerCase().includes('frontend') || campaignData.topic.toLowerCase().includes('coding') ? `CODE STANDARDS:
 - Syntax: All explanations and examples must exclusively use modern Functional Components and Hooks syntax
 - Language: Use modern JavaScript (ES6+) for all code, defaulting to JSX
 - TypeScript: If TypeScript is used, it should be introduced as a separate, clearly marked lesson/topic
-- Prohibited: Class components and deprecated lifecycles are strictly forbidden
+- Prohibited: Class components and deprecated lifecycles are strictly forbidden` : ''}
 
 DOMAIN STANDARDS:
 - Use current, industry-standard practices for the specified topic
