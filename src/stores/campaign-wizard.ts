@@ -36,7 +36,7 @@ export interface GeneratedContent {
     objective: string;
     resources: string[];
     estimatedTime: string;
-    subMilestones?: Array<{
+    lessons?: Array<{
       title: string;
       objective: string;
       resources: string[];

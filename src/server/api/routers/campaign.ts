@@ -7,7 +7,7 @@ import {
 import { TRPCError } from "@trpc/server";
 import fetch from "node-fetch";
 import { generateCampaignContent } from "~/lib/gemini";
-import { discoverResourcesForMilestone, discoverResourcesForSubMilestone } from "~/lib/resource-discovery";
+import { discoverResourcesForMilestone, discoverResourcesForLesson } from "~/lib/resource-discovery";
 
 // Helper function to build AI prompt for campaign generation
 function buildCampaignPrompt(campaign: any, params: any): string {
@@ -138,7 +138,7 @@ export const campaignRouter = createTRPCRouter({
         where: { id: input.milestoneId },
         include: {
           campaign: true,
-          subMilestones: true,
+          lessons: true,
         },
       });
 
@@ -158,20 +158,20 @@ export const campaignRouter = createTRPCRouter({
         resourceTypes: campaign.resourceTypes || [],
       });
 
-      // Discover resources for each sub-milestone
-      const subMilestoneResources = await Promise.all(
-        milestone.subMilestones.map(async (subMilestone) => {
-          const resources = await discoverResourcesForSubMilestone({
+      // Discover resources for each lesson
+      const lessonResources = await Promise.all(
+        milestone.lessons.map(async (lesson) => {
+          const resources = await discoverResourcesForLesson({
             topic: campaign.topic,
             milestoneTitle: milestone.title,
             milestoneObjective: milestone.objective,
             bloomLevel: milestone.bloomLevel,
             focusAreas: campaign.focusAreas,
             resourceTypes: campaign.resourceTypes || [],
-            subMilestoneTitle: subMilestone.title,
-            subMilestoneObjective: subMilestone.objective,
+            lessonTitle: lesson.title,
+            lessonObjective: lesson.objective,
           });
-          return { subMilestoneId: subMilestone.id, resources };
+          return { lessonId: lesson.id, resources };
         })
       );
 
@@ -241,9 +241,9 @@ export const campaignRouter = createTRPCRouter({
         })
       );
 
-      // Validate and save sub-milestone resources (save to main milestone)
-      const validatedSubMilestoneResources = await Promise.all(
-        subMilestoneResources.flatMap(({ subMilestoneId, resources }) =>
+      // Validate and save lesson resources (save to individual lessons)
+      const validatedLessonResources = await Promise.all(
+        lessonResources.flatMap(({ lessonId, resources }) =>
           resources.map(async (resource) => {
             try {
               const response = await fetch(resource.url, { 
@@ -255,8 +255,8 @@ export const campaignRouter = createTRPCRouter({
 
               return await ctx.db.resource.upsert({
                 where: {
-                  milestoneId_url: { 
-                    milestoneId: milestone.id, // Save to main milestone, not sub-milestone
+                  lessonId_url: { 
+                    lessonId: lessonId, 
                     url: resource.url 
                   },
                 },
@@ -268,7 +268,7 @@ export const campaignRouter = createTRPCRouter({
                   lastCheckedAt: new Date(),
                 },
                 create: {
-                  milestoneId: milestone.id, // Save to main milestone, not sub-milestone
+                  lessonId: lessonId,
                   url: resource.url,
                   type: resource.type,
                   title: resource.title,
@@ -278,11 +278,11 @@ export const campaignRouter = createTRPCRouter({
                 },
               });
             } catch (error) {
-              console.error(`Error validating sub-milestone resource ${resource.url}:`, error);
+              console.error(`Error validating lesson resource ${resource.url}:`, error);
               return await ctx.db.resource.upsert({
                 where: {
-                  milestoneId_url: { 
-                    milestoneId: milestone.id, // Save to main milestone, not sub-milestone
+                  lessonId_url: { 
+                    lessonId: lessonId, 
                     url: resource.url 
                   },
                 },
@@ -294,7 +294,7 @@ export const campaignRouter = createTRPCRouter({
                   lastCheckedAt: new Date(),
                 },
                 create: {
-                  milestoneId: milestone.id, // Save to main milestone, not sub-milestone
+                  lessonId: lessonId,
                   url: resource.url,
                   type: resource.type,
                   title: resource.title,
@@ -308,7 +308,7 @@ export const campaignRouter = createTRPCRouter({
         )
       );
 
-      const allResources = [...validatedMilestoneResources, ...validatedSubMilestoneResources];
+      const allResources = [...validatedMilestoneResources, ...validatedLessonResources];
       const liveResources = allResources.filter(r => r.isAlive);
 
       return { 
@@ -369,13 +369,15 @@ export const campaignRouter = createTRPCRouter({
           milestones: {
             orderBy: { order: "asc" },
             include: {
-              subMilestones: {
+              lessons: {
                 orderBy: { order: "asc" },
                 include: {
                   quizzes: true,
+                  resources: true,
                 },
               },
               quizzes: true,
+              resources: true,
             },
           },
           _count: {
@@ -1533,7 +1535,11 @@ export const campaignRouter = createTRPCRouter({
         include: {
           milestone: {
             include: {
-              subMilestones: true,
+              lessons: {
+                include: {
+                  resources: true,
+                },
+              },
               quizzes: true,
               resources: true,
             },

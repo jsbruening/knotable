@@ -131,20 +131,20 @@ Return exactly ${Math.max(8, Math.min(12, 6 + bloomLevel))} resources.
 }
 
 /**
- * Discover resources for sub-milestones
+ * Discover resources for lessons
  */
-export async function discoverResourcesForSubMilestone(
-  params: ResourceDiscoveryParams & { subMilestoneTitle: string; subMilestoneObjective: string }
+export async function discoverResourcesForLesson(
+  params: ResourceDiscoveryParams & { lessonTitle: string; lessonObjective: string }
 ): Promise<DiscoveredResource[]> {
-  const subParams = {
+  const lessonParams = {
     ...params,
-    milestoneTitle: params.subMilestoneTitle,
-    milestoneObjective: params.subMilestoneObjective,
+    milestoneTitle: params.lessonTitle,
+    milestoneObjective: params.lessonObjective,
   };
   
-  // For sub-milestones, we want fewer but more focused resources
-  const resources = await discoverResourcesForMilestone(subParams);
-  return resources.slice(0, 6); // Limit sub-milestone resources to 6
+  // For lessons, we want fewer but more focused resources
+  const resources = await discoverResourcesForMilestone(lessonParams);
+  return resources.slice(0, 6); // Limit lesson resources to 6
 }
 
 function getBloomLevelName(level: number): string {

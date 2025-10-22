@@ -249,18 +249,18 @@ export function ReviewStep() {
                         )}
                     </div>
 
-                    {/* Sub-milestones */}
-                    {milestone.subMilestones &&
-                      milestone.subMilestones.length > 0 && (
+                    {/* Lessons */}
+                    {milestone.lessons &&
+                      milestone.lessons.length > 0 && (
                         <div className="ml-4 border-l-2 border-white/20 pl-4">
                           <Label className="text-sm font-medium text-white">
-                            Sub-milestones:
+                            Lessons:
                           </Label>
                           <div className="mt-2 space-y-3">
-                            {milestone.subMilestones.map(
-                              (subMilestone: any, subIndex: number) => (
+                            {milestone.lessons.map(
+                              (lesson: any, lessonIndex: number) => (
                                 <div
-                                  key={subIndex}
+                                  key={lessonIndex}
                                   className="rounded-lg border border-white/10 bg-white/5 p-3"
                                 >
                                   <div className="mb-2 flex items-start justify-between">
@@ -269,34 +269,34 @@ export function ReviewStep() {
                                         variant="glassBlue"
                                         className="text-xs"
                                       >
-                                        Sub-milestone {subIndex + 1}
+                                        Lesson {lessonIndex + 1}
                                       </Badge>
-                                      {subMilestone.estimatedTime && (
+                                      {lesson.estimatedTime && (
                                         <Badge
                                           variant="glassYellow"
                                           className="text-xs"
                                         >
-                                          {subMilestone.estimatedTime}
+                                          {lesson.estimatedTime}
                                         </Badge>
                                       )}
                                     </div>
                                   </div>
 
                                   <h5 className="mb-1 text-sm font-medium text-white">
-                                    {subMilestone.title}
+                                    {lesson.title}
                                   </h5>
                                   <p className="mb-2 text-xs text-white/70">
-                                    {subMilestone.objective}
+                                    {lesson.objective}
                                   </p>
 
-                                  {subMilestone.resources &&
-                                    subMilestone.resources.length > 0 && (
+                                  {lesson.resources &&
+                                    lesson.resources.length > 0 && (
                                       <div>
                                         <Label className="text-xs text-white">
                                           Resources:
                                         </Label>
                                         <ul className="mt-1 space-y-1 text-xs text-white/60">
-                                          {subMilestone.resources.map(
+                                          {lesson.resources.map(
                                             (resource: string, i: number) => (
                                               <li key={i} className="break-all">
                                                 <a
@@ -314,8 +314,8 @@ export function ReviewStep() {
                                       </div>
                                     )}
 
-                                  {subMilestone.assessmentQuestions &&
-                                    subMilestone.assessmentQuestions.length >
+                                  {lesson.assessmentQuestions &&
+                                    lesson.assessmentQuestions.length >
                                       0 && (
                                       <div className="mt-2">
                                         <Label className="text-xs text-white">
@@ -323,11 +323,11 @@ export function ReviewStep() {
                                         </Label>
                                         <div className="mt-1 text-xs text-white/60">
                                           {
-                                            subMilestone.assessmentQuestions
+                                            lesson.assessmentQuestions
                                               .length
                                           }{" "}
                                           question
-                                          {subMilestone.assessmentQuestions
+                                          {lesson.assessmentQuestions
                                             .length !== 1
                                             ? "s"
                                             : ""}

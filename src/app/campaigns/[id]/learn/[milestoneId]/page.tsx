@@ -214,10 +214,17 @@ export default function LearningSessionPage() {
   }
 
   const { milestone, campaign } = session;
-  // Use validated resources from Resource table, fallback to externalResources if none exist
-  const resources = milestone.resources && milestone.resources.length > 0
-    ? milestone.resources
+  
+  // Hybrid approach: Combine milestone resources + lesson resources
+  const milestoneResources = milestone.resources || [];
+  const lessonResources = milestone.lessons?.flatMap(lesson => lesson.resources || []) || [];
+  const allResources = [...milestoneResources, ...lessonResources];
+  
+  // Fallback to externalResources if no validated resources exist
+  const resources = allResources.length > 0 
+    ? allResources 
     : milestone.externalResources.map(url => ({ url, title: url, type: "article", isAlive: true }));
+  
   const progressPercentage = (completedResources.length / resources.length) * 100;
 
   return (

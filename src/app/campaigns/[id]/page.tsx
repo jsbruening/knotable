@@ -334,18 +334,18 @@ export default function CampaignDetailPage() {
                             </div>
                           )}
 
-                        {/* Sub-milestones */}
-                        {milestone.subMilestones &&
-                          milestone.subMilestones.length > 0 && (
+                        {/* Lessons */}
+                        {milestone.lessons &&
+                          milestone.lessons.length > 0 && (
                             <div>
                               <h4 className="mb-3 font-semibold text-white">
-                                Sub-milestones
+                                Lessons
                               </h4>
                               <div className="space-y-3">
-                                {milestone.subMilestones.map(
-                                  (subMilestone, subIndex) => (
+                                {milestone.lessons.map(
+                                  (lesson, lessonIndex) => (
                                     <div
-                                      key={subMilestone.id}
+                                      key={lesson.id}
                                       className="rounded-lg border border-white/10 bg-white/5 p-4"
                                     >
                                       <div className="mb-2 flex items-start justify-between">
@@ -354,46 +354,46 @@ export default function CampaignDetailPage() {
                                             variant="glassBlue"
                                             className="text-xs"
                                           >
-                                            Sub-milestone {subIndex + 1}
+                                            Lesson {lessonIndex + 1}
                                           </Badge>
-                                          {subMilestone.estimatedTime && (
+                                          {lesson.estimatedTime && (
                                             <Badge
                                               variant="glassYellow"
                                               className="text-xs"
                                             >
-                                              {subMilestone.estimatedTime}
+                                              {lesson.estimatedTime}
                                             </Badge>
                                           )}
                                         </div>
                                       </div>
 
                                       <h5 className="mb-1 text-sm font-medium text-white">
-                                        {subMilestone.title}
+                                        {lesson.title}
                                       </h5>
                                       <p className="mb-2 text-xs text-white/70">
-                                        {subMilestone.objective}
+                                        {lesson.objective}
                                       </p>
 
-                                      {subMilestone.resources &&
-                                        subMilestone.resources.length > 0 && (
+                                      {lesson.resources &&
+                                        lesson.resources.length > 0 && (
                                           <div className="mb-2">
                                             <Label className="text-xs text-white">
                                               Resources:
                                             </Label>
                                             <ul className="mt-1 space-y-1 text-xs text-white/60">
-                                              {subMilestone.resources.map(
+                                              {lesson.resources.map(
                                                 (resource, i) => (
                                                   <li
                                                     key={i}
                                                     className="break-all"
                                                   >
                                                     <a
-                                                      href={resource}
+                                                      href={resource.url}
                                                       target="_blank"
                                                       rel="noopener noreferrer"
                                                       className="underline hover:text-white"
                                                     >
-                                                      {resource}
+                                                      {resource.title || resource.url}
                                                     </a>
                                                   </li>
                                                 ),
@@ -402,29 +402,22 @@ export default function CampaignDetailPage() {
                                           </div>
                                         )}
 
-                                      {subMilestone.assessmentQuestions &&
-                                        subMilestone.assessmentQuestions
-                                          .length > 0 && (
+                                      {lesson.quizzes &&
+                                        lesson.quizzes.length > 0 && (
                                           <div>
                                             <Label className="text-xs text-white">
-                                              Assessment Questions:
+                                              Quizzes:
                                             </Label>
                                             <div className="mt-1 space-y-2">
-                                              {subMilestone.assessmentQuestions.map(
-                                                (question, qIndex) => (
+                                              {lesson.quizzes.map(
+                                                (quiz, qIndex) => (
                                                   <div
                                                     key={qIndex}
                                                     className="rounded bg-white/5 p-2 text-xs"
                                                   >
                                                     <p className="mb-1 text-white/80">
-                                                      {question.question}
+                                                      {quiz.title}
                                                     </p>
-                                                    <div className="text-white/60">
-                                                      Options:{" "}
-                                                      {question.options?.join(
-                                                        ", ",
-                                                      )}
-                                                    </div>
                                                   </div>
                                                 ),
                                               )}

@@ -107,7 +107,7 @@ model Milestone {
     createdAt         DateTime          @default(now())
     updatedAt         DateTime          @updatedAt
     campaign          Campaign          @relation(fields: [campaignId], references: [id], onDelete: Cascade)
-    subMilestones     SubMilestone[]
+    lessons           Lesson[]
     quizzes           Quiz[]
     teamChallenges    TeamChallenge[]
     resources         Resource[]
@@ -117,7 +117,7 @@ model Milestone {
     @@index([bloomLevel])
 }
 
-model SubMilestone {
+model Lesson {
     id                String    @id @default(cuid())
     milestoneId       String
     title             String
@@ -130,28 +130,29 @@ model SubMilestone {
     updatedAt         DateTime  @updatedAt
     milestone         Milestone @relation(fields: [milestoneId], references: [id], onDelete: Cascade)
     quizzes           Quiz[]
+    resources         Resource[]
 
     @@index([milestoneId])
     @@index([order])
 }
 
 model Quiz {
-    id             String        @id @default(cuid())
-    milestoneId    String?
-    subMilestoneId String?
-    title          String
-    questions      Json
-    passingScore   Int           @default(70)
-    timeLimit      Int?
-    isActive       Boolean       @default(true)
-    createdAt      DateTime      @default(now())
-    updatedAt      DateTime      @updatedAt
-    milestone      Milestone?    @relation(fields: [milestoneId], references: [id], onDelete: Cascade)
-    subMilestone   SubMilestone? @relation(fields: [subMilestoneId], references: [id], onDelete: Cascade)
-    attempts       QuizAttempt[]
+    id          String        @id @default(cuid())
+    milestoneId String?
+    lessonId    String?
+    title       String
+    questions   Json
+    passingScore Int       @default(70)
+    timeLimit   Int?
+    isActive    Boolean   @default(true)
+    createdAt   DateTime  @default(now())
+    updatedAt   DateTime  @updatedAt
+    milestone   Milestone? @relation(fields: [milestoneId], references: [id], onDelete: Cascade)
+    lesson      Lesson?    @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+    attempts    QuizAttempt[]
 
     @@index([milestoneId])
-    @@index([subMilestoneId])
+    @@index([lessonId])
 }
 
 model QuizAttempt {
@@ -396,7 +397,8 @@ model ResourceProgress {
 
 model Resource {
     id            String    @id @default(cuid())
-    milestoneId   String
+    milestoneId   String?
+    lessonId      String?
     type          String // video | article | tool | pdf
     title         String
     url           String
@@ -406,9 +408,12 @@ model Resource {
     createdAt     DateTime  @default(now())
     updatedAt     DateTime  @updatedAt
 
-    milestone Milestone @relation(fields: [milestoneId], references: [id], onDelete: Cascade)
+    milestone Milestone? @relation(fields: [milestoneId], references: [id], onDelete: Cascade)
+    lesson    Lesson?    @relation(fields: [lessonId], references: [id], onDelete: Cascade)
 
     @@unique([milestoneId, url])
+    @@unique([lessonId, url])
     @@index([milestoneId])
+    @@index([lessonId])
     @@index([isAlive])
 }
