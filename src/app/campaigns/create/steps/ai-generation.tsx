@@ -27,6 +27,7 @@ import {
   RotateCcw,
   Edit3,
   FileText,
+  Trash2,
 } from "lucide-react";
 import { api } from "~/trpc/react";
 import { useCampaignWizardStore } from "~/stores/campaign-wizard";
@@ -741,27 +742,126 @@ Create a comprehensive learning campaign with exactly ${campaignData.targetBloom
                 <h4 className="mb-2 font-semibold text-white">
                   Milestones ({generatedContent.milestones?.length || 0})
                 </h4>
-                <div className="space-y-2">
+                <div className="space-y-6">
                   {generatedContent.milestones
                     ?.map((milestone: any, index: number) => (
-                      <div key={index} className="rounded-lg bg-white/10 p-3">
-                        <h5 className="font-medium text-white">
+                      <div key={index} className="rounded-lg bg-white/10 p-6 border border-white/20">
+                        {/* Milestone Header */}
+                        <div className="flex items-center justify-between mb-4">
+                          <div className="flex items-center gap-2">
+                            <span className="px-2 py-1 bg-blue-500/20 text-blue-300 text-xs font-medium rounded-full">
+                              Level {milestone.bloomLevel}
+                            </span>
+                            <span className="px-2 py-1 bg-purple-500/20 text-purple-300 text-xs font-medium rounded-full">
+                              Milestone {index + 1}
+                            </span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <Button variant="ghost" size="sm" className="text-white/60 hover:text-white">
+                              <Edit3 className="h-4 w-4" />
+                            </Button>
+                            <Button variant="ghost" size="sm" className="text-white/60 hover:text-red-400">
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        </div>
+
+                        {/* Milestone Title */}
+                        <h5 className="text-lg font-semibold text-white mb-2">
                           {milestone.title}
                         </h5>
-                        <p className="text-sm text-white/80">
+                        
+                        {/* Milestone Objective */}
+                        <p className="text-sm text-white/80 mb-4">
                           {milestone.objective}
                         </p>
-                        
-                        {/* Show lessons if they exist */}
-                        {milestone.lessons && milestone.lessons.length > 0 && (
-                          <div className="mt-3 ml-4">
-                            <h6 className="text-xs font-medium text-white/70 mb-2">
-                              Lessons ({milestone.lessons.length}):
-                            </h6>
+
+                        {/* Resources */}
+                        {milestone.resources && milestone.resources.length > 0 && (
+                          <div className="mb-4">
+                            <h6 className="text-sm font-medium text-white/90 mb-2">Resources:</h6>
                             <div className="space-y-1">
+                              {milestone.resources.map((resource: string, resourceIndex: number) => (
+                                <a
+                                  key={resourceIndex}
+                                  href={resource}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="block text-xs text-blue-300 hover:text-blue-200 underline"
+                                >
+                                  {resource}
+                                </a>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Milestone Assessment Questions */}
+                        {milestone.assessmentQuestions && milestone.assessmentQuestions.length > 0 && (
+                          <div className="mb-4">
+                            <h6 className="text-sm font-medium text-white/90 mb-2">
+                              Assessment Questions: {milestone.assessmentQuestions.length} questions
+                            </h6>
+                          </div>
+                        )}
+
+                        {/* Lessons */}
+                        {milestone.lessons && milestone.lessons.length > 0 && (
+                          <div>
+                            <h6 className="text-sm font-medium text-white/90 mb-3">Lessons:</h6>
+                            <div className="space-y-4 ml-4">
                               {milestone.lessons.map((lesson: any, lessonIndex: number) => (
-                                <div key={lessonIndex} className="text-xs text-white/60">
-                                  • {lesson.title}
+                                <div key={lessonIndex} className="rounded-lg bg-white/5 p-4 border border-white/10">
+                                  {/* Lesson Header */}
+                                  <div className="flex items-center gap-2 mb-2">
+                                    <span className="px-2 py-1 bg-green-500/20 text-green-300 text-xs font-medium rounded-full">
+                                      Lesson {lessonIndex + 1}
+                                    </span>
+                                    {lesson.estimatedTime && (
+                                      <span className="px-2 py-1 bg-yellow-500/20 text-yellow-300 text-xs font-medium rounded-full">
+                                        {lesson.estimatedTime}
+                                      </span>
+                                    )}
+                                  </div>
+
+                                  {/* Lesson Title */}
+                                  <h7 className="text-sm font-medium text-white mb-2 block">
+                                    {lesson.title}
+                                  </h7>
+
+                                  {/* Lesson Objective */}
+                                  <p className="text-xs text-white/70 mb-3">
+                                    {lesson.objective}
+                                  </p>
+
+                                  {/* Lesson Resources */}
+                                  {lesson.resources && lesson.resources.length > 0 && (
+                                    <div className="mb-3">
+                                      <h8 className="text-xs font-medium text-white/80 mb-1">Resources:</h8>
+                                      <div className="space-y-1">
+                                        {lesson.resources.map((resource: string, resourceIndex: number) => (
+                                          <a
+                                            key={resourceIndex}
+                                            href={resource}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="block text-xs text-blue-300 hover:text-blue-200 underline"
+                                          >
+                                            {resource}
+                                          </a>
+                                        ))}
+                                      </div>
+                                    </div>
+                                  )}
+
+                                  {/* Lesson Assessment Questions */}
+                                  {lesson.assessmentQuestions && lesson.assessmentQuestions.length > 0 && (
+                                    <div>
+                                      <h8 className="text-xs font-medium text-white/80">
+                                        Quiz Questions: {lesson.assessmentQuestions.length} questions
+                                      </h8>
+                                    </div>
+                                  )}
                                 </div>
                               ))}
                             </div>
