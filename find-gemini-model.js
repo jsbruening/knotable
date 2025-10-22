@@ -72,3 +72,6 @@ async function findWorkingGeminiModel() {
 
 findWorkingGeminiModel().catch(console.error);
 
+
+
+

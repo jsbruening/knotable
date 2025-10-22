@@ -1,8 +1,9 @@
 import { env } from "~/env.js";
 import { generateCampaignContent as generateWithGemini } from "./gemini";
 import { generateCampaignContent as generateWithOpenAI } from "./openai";
+import { generateCampaignContentWithGroq } from "./groq";
 
-export type LLMProvider = "gemini" | "openai" | "auto";
+export type LLMProvider = "gemini" | "openai" | "groq" | "auto";
 
 export interface LLMConfig {
   provider: LLMProvider;
@@ -43,6 +44,13 @@ const PROVIDER_CONFIGS = {
     costPerToken: 0.000002, // Approximate
     enabled: !!env.OPENAI_API_KEY,
   },
+  groq: {
+    name: "Groq",
+    models: ["llama-3.1-70b-versatile", "mixtral-8x7b-32768", "gemma-7b-it"],
+    defaultModel: "llama-3.1-70b-versatile",
+    costPerToken: 0.0000005, // Ultra-cheap and fast
+    enabled: !!env.GROQ_API_KEY,
+  },
 };
 
 // Get available providers
@@ -72,7 +80,10 @@ function selectProvider(config: LLMConfig): string {
 
   // Auto-selection logic (can be enhanced with cost/performance metrics)
   if (config.provider === "auto") {
-    // Simple rotation: prefer Gemini for cost, OpenAI for reliability
+    // Smart rotation: prefer Groq for speed+cost, Gemini for cost, OpenAI for reliability
+    if (availableProviders.includes("groq")) {
+      return "groq";
+    }
     if (availableProviders.includes("gemini")) {
       return "gemini";
     }
@@ -107,6 +118,9 @@ export async function generateWithLLM(
         break;
       case "openai":
         content = await generateWithOpenAI(prompt);
+        break;
+      case "groq":
+        content = await generateWithGroq(prompt);
         break;
       default:
         throw new Error(`Unknown provider: ${selectedProvider}`);
@@ -146,6 +160,9 @@ export async function generateWithLLM(
             break;
           case "openai":
             content = await generateWithOpenAI(prompt);
+            break;
+          case "groq":
+            content = await generateWithGroq(prompt);
             break;
           default:
             throw new Error(`Unknown fallback provider: ${fallbackProvider}`);
