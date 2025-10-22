@@ -212,7 +212,11 @@ export default function LearningSessionPage() {
   }
 
   const { milestone, campaign } = session;
-  const progressPercentage = (completedResources.length / milestone.externalResources.length) * 100;
+  // Use validated resources from Resource table, fallback to externalResources if none exist
+  const resources = milestone.resources && milestone.resources.length > 0 
+    ? milestone.resources 
+    : milestone.externalResources.map(url => ({ url, title: url, type: "article", isAlive: true }));
+  const progressPercentage = (completedResources.length / resources.length) * 100;
 
   return (
     <div className="min-h-screen bg-app-gradient">
@@ -261,7 +265,7 @@ export default function LearningSessionPage() {
               </div>
               <Progress value={progressPercentage} className="w-48 mb-2" />
               <div className="text-white text-sm">
-                {completedResources.length} / {milestone.externalResources.length} resources
+                {completedResources.length} / {resources.length} resources
               </div>
             </div>
           </div>
@@ -281,16 +285,23 @@ export default function LearningSessionPage() {
             </CardHeader>
             <CardContent>
               <div className="grid gap-4">
-                {milestone.externalResources.map((resource, index) => {
-                  const resourceType = getResourceType(resource);
-                  const isCompleted = completedResources.includes(resource);
-                  const readable = getReadableResourceTitle(resource);
+                {resources.map((resource, index) => {
+                  const resourceUrl = typeof resource === 'string' ? resource : resource.url;
+                  const resourceType = typeof resource === 'string' ? getResourceType(resource) : resource.type;
+                  const isCompleted = completedResources.includes(resourceUrl);
+                  const readable = typeof resource === 'string' 
+                    ? getReadableResourceTitle(resource) 
+                    : { title: resource.title, subtitle: resource.provider };
 
+                  const isDead = typeof resource === 'object' && !resource.isAlive;
+                  
                   return (
                     <div
                       key={index}
                       className={`p-4 rounded-lg border transition-all ${isCompleted
                         ? "bg-green-500/20 border-green-500/50"
+                        : isDead
+                        ? "bg-red-500/10 border-red-500/30 opacity-60"
                         : "bg-white/5 border-white/10 hover:bg-white/10"
                         }`}
                     >
@@ -302,6 +313,11 @@ export default function LearningSessionPage() {
                           <div>
                             <div className="text-white font-medium">
                               {readable.title}
+                              {isDead && (
+                                <span className="ml-2 text-red-400 text-xs">
+                                  (Dead Link)
+                                </span>
+                              )}
                             </div>
                             <div className="text-white/60 text-xs">
                               {readable.subtitle || (resourceType.charAt(0).toUpperCase() + resourceType.slice(1))}
@@ -319,7 +335,7 @@ export default function LearningSessionPage() {
                             <Button
                               variant="outline"
                               size="sm"
-                              onClick={() => handleResourceComplete(resource)}
+                              onClick={() => handleResourceComplete(resourceUrl)}
                               className="border-white/20 text-white hover:bg-white/10"
                             >
                               <CheckCircle className="h-3 w-3 mr-1" />
@@ -331,11 +347,12 @@ export default function LearningSessionPage() {
                             variant="outline"
                             size="sm"
                             asChild
-                            className="border-white/20 text-white hover:bg-white/10"
+                            disabled={isDead}
+                            className="border-white/20 text-white hover:bg-white/10 disabled:opacity-50 disabled:cursor-not-allowed"
                           >
-                            <a href={resource} target="_blank" rel="noopener noreferrer">
+                            <a href={resourceUrl} target="_blank" rel="noopener noreferrer">
                               <ExternalLink className="h-3 w-3 mr-1" />
-                              Open
+                              {isDead ? "Dead Link" : "Open"}
                             </a>
                           </Button>
                         </div>
