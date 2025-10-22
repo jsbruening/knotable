@@ -90,13 +90,113 @@ export function AIGenerationStep() {
   const generateContentMutation = api.campaign.generateContent.useMutation();
   const saveDraftMutation = api.campaign.saveDraft.useMutation();
 
+  // Build the AI prompt for preview
+  const buildPrompt = () => {
+    const levelNames = [
+      "",
+      "Remember",
+      "Understand",
+      "Apply",
+      "Analyze",
+      "Evaluate",
+      "Create",
+    ];
+    return `
+You are an expert educational content creator specializing in Bloom's Taxonomy. Create a comprehensive learning campaign.
+
+CAMPAIGN DETAILS:
+- Title: "${campaignData.title}"
+- Topic: ${campaignData.topic}
+- Description: ${campaignData.description}
+- Target Audience: ${campaignData.targetAudience || "General learners"}
+- Starting Bloom Level: ${campaignData.startingBloomLevel} (${levelNames[campaignData.startingBloomLevel]})
+- Target Bloom Level: ${campaignData.targetBloomLevel} (${levelNames[campaignData.targetBloomLevel]})
+- Focus Areas: ${campaignData.focusAreas?.join(", ") || "None specified"}
+- Estimated Duration: ${campaignData.estimatedDuration || "Not specified"}
+- Tone: ${campaignData.tone || "Professional"}
+
+LEARNING PARAMETERS:
+- Learning Style: ${aiParams.learningStyle || "Mixed"}
+- Difficulty Preference: ${aiParams.difficultyPreference || "Balanced"}
+- Content Format: ${aiParams.contentFormat || "Mixed"}
+- Time Commitment: ${aiParams.timeCommitment || "Flexible"}
+- Prerequisites: ${aiParams.prerequisites || "None specified"}
+
+ADVANCED CONFIGURATION:
+- Resource Types: ${aiParams.resourceTypes?.join(", ") || "Mixed formats"}
+- Final Learning Outcome: ${aiParams.finalLearningOutcome || "Comprehensive understanding"}
+- Question Format: ${aiParams.questionFormat || "Multiple choice"}
+
+IMPORTANT:
+- Use real, high-quality educational resources when possible
+- Make objectives specific and measurable
+- Ensure questions test the appropriate Bloom level
+- Keep the JSON structure exactly as specified
+- Make content engaging and practical
+- Each milestone should build on the previous one
+
+RESOURCE GUIDANCE:
+- Mix documentation, videos, tutorials, and interactive content
+
+FINAL OUTCOME GUIDANCE:
+- Culminate in a production-ready deployed application
+- Include testing, performance optimization, and documentation
+
+TASK:
+Create a comprehensive learning campaign with ${campaignData.targetBloomLevel - campaignData.startingBloomLevel + 1} milestones, progressing from Bloom level ${campaignData.startingBloomLevel} to ${campaignData.targetBloomLevel}.
+
+Return ONLY a valid JSON object with this exact structure:
+{
+  "milestones": [
+    {
+      "bloomLevel": 1,
+      "title": "Milestone title",
+      "objective": "Clear learning objective",
+      "resources": [
+        "https://real-official-docs-url.com",
+        "https://real-tutorial-url.com",
+        "https://real-video-url.com"
+      ],
+      "estimatedTime": "X-Y hours",
+      "lessons": [
+        {
+          "title": "Specific lesson title",
+          "objective": "Clear learning objective for this lesson",
+          "resources": [
+            "https://real-resource-url.com",
+            "https://real-tutorial-url.com"
+          ],
+          "estimatedTime": "1-2 hours",
+          "assessmentQuestions": [
+            {
+              "question": "Context-specific question for this lesson",
+              "options": ["Option A", "Option B", "Option C", "Option D"],
+              "correctAnswer": "A",
+              "explanation": "Detailed explanation of why this answer is correct"
+            }
+          ]
+        }
+      ],
+      "assessmentQuestions": [
+        {
+          "question": "Context-specific question that tests this Bloom level",
+          "options": ["Option A", "Option B", "Option C", "Option D"],
+          "correctAnswer": "A",
+          "explanation": "Detailed explanation of why this answer is correct"
+        }
+      ]
+    }
+  ]
+}`;
+  };
+
   // Initialize the prompt when component loads
   useEffect(() => {
     if (!aiPrompt) {
       const prompt = buildPrompt();
       setAIPrompt(prompt);
     }
-  }, [campaignData, aiParams, aiPrompt, setAIPrompt]);
+  }, [campaignData, aiParams, setAIPrompt, buildPrompt]);
 
   // Listen for navigation events from the header
   useEffect(() => {
