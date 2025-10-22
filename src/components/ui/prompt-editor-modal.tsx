@@ -123,7 +123,7 @@ export function PromptEditorModal({
               id="prompt-editor"
               value={editedPrompt}
               onChange={(e) => handlePromptChange(e.target.value)}
-              className="h-full min-h-[400px] resize-none border-white/20 bg-white/10 font-mono text-sm text-white placeholder:text-white/50 overflow-y-auto"
+              className="max-h-[500px] min-h-[400px] resize-none border-white/20 bg-white/10 font-mono text-sm text-white placeholder:text-white/50 overflow-y-auto"
               placeholder="Enter your AI prompt here..."
             />
           </div>
