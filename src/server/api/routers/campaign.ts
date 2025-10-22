@@ -1048,7 +1048,7 @@ export const campaignRouter = createTRPCRouter({
       })
     )
     .mutation(async ({ ctx, input }) => {
-      const { userId } = ctx;
+      const userId = ctx.user.id;
       const { campaignId, milestoneId } = input;
 
       // Check if user is part of the campaign
@@ -1125,7 +1125,7 @@ export const campaignRouter = createTRPCRouter({
       })
     )
     .mutation(async ({ ctx, input }) => {
-      const { userId } = ctx;
+      const userId = ctx.user.id;
       const { sessionId, progress, timeSpent, completedResources } = input;
 
       // Verify session belongs to user
@@ -1168,7 +1168,7 @@ export const campaignRouter = createTRPCRouter({
       })
     )
     .mutation(async ({ ctx, input }) => {
-      const { userId } = ctx;
+      const userId = ctx.user.id;
       const { sessionId } = input;
 
       // Verify session belongs to user
@@ -1284,7 +1284,7 @@ export const campaignRouter = createTRPCRouter({
       })
     )
     .query(async ({ ctx, input }) => {
-      const { userId } = ctx;
+      const userId = ctx.user.id;
       const { sessionId } = input;
 
       const session = await ctx.db.learningSession.findFirst({
