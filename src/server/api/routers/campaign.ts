@@ -6,7 +6,7 @@ import {
 } from "~/server/api/trpc";
 import { TRPCError } from "@trpc/server";
 import fetch from "node-fetch";
-import { generateCampaignContent } from "~/lib/gemini";
+import { generateCampaignContent } from "~/lib/llm";
 import { discoverResourcesForMilestone, discoverResourcesForLesson } from "~/lib/resource-discovery";
 
 // Helper function to build AI prompt for campaign generation

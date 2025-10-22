@@ -6,11 +6,13 @@ import { Button } from "~/components/ui/button";
 import { Switch } from "~/components/ui/switch";
 import { Label } from "~/components/ui/label";
 import { Badge } from "~/components/ui/badge";
-import { AlertTriangle, Settings, Zap } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "~/components/ui/select";
+import { AlertTriangle, Settings, Zap, Brain, RefreshCw } from "lucide-react";
 import { toast } from "sonner";
 
 export default function AdminSettings() {
   const [isGeminiDisabled, setIsGeminiDisabled] = useState(false);
+  const [selectedLLM, setSelectedLLM] = useState("auto");
 
   const handleToggleGemini = async () => {
     try {
@@ -32,6 +34,13 @@ export default function AdminSettings() {
     }
   };
 
+  const handleLLMChange = (value: string) => {
+    setSelectedLLM(value);
+    toast.success(`LLM Provider changed to ${value}`, {
+      description: value === "auto" ? "Will automatically rotate between providers" : `Using ${value} for all requests`
+    });
+  };
+
   return (
     <div className="min-h-screen bg-app-gradient">
       <div className="container mx-auto px-4 py-8">
@@ -46,6 +55,109 @@ export default function AdminSettings() {
               Manage system settings and API configurations
             </p>
           </div>
+
+          {/* LLM Provider Settings */}
+          <Card className="mb-6 bg-white/10 border-white/20">
+            <CardHeader>
+              <div className="flex items-center justify-between">
+                <div>
+                  <CardTitle className="text-white flex items-center gap-2">
+                    <Brain className="h-5 w-5" />
+                    LLM Provider Settings
+                  </CardTitle>
+                  <CardDescription className="text-white/70">
+                    Choose which AI provider to use for content generation
+                  </CardDescription>
+                </div>
+                <Badge 
+                  variant="default"
+                  className="bg-blue-500/20 text-blue-300 border-blue-500/30"
+                >
+                  {selectedLLM === "auto" ? "Auto-Rotate" : selectedLLM.toUpperCase()}
+                </Badge>
+              </div>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="flex items-center justify-between p-4 rounded-lg bg-white/5 border border-white/10">
+                <div className="space-y-1">
+                  <Label htmlFor="llm-select" className="text-white font-medium">
+                    Primary LLM Provider
+                  </Label>
+                  <p className="text-sm text-white/70">
+                    Select which AI provider to use for campaign generation
+                  </p>
+                </div>
+                <Select value={selectedLLM} onValueChange={handleLLMChange}>
+                  <SelectTrigger className="w-48 bg-white/10 border-white/20 text-white">
+                    <SelectValue placeholder="Select provider" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-white/10 border-white/20">
+                    <SelectItem value="auto" className="text-white hover:bg-white/20">
+                      <div className="flex items-center gap-2">
+                        <RefreshCw className="h-4 w-4" />
+                        Auto-Rotate
+                      </div>
+                    </SelectItem>
+                    <SelectItem value="gemini" className="text-white hover:bg-white/20">
+                      <div className="flex items-center gap-2">
+                        <Zap className="h-4 w-4" />
+                        Google Gemini
+                      </div>
+                    </SelectItem>
+                    <SelectItem value="openai" className="text-white hover:bg-white/20">
+                      <div className="flex items-center gap-2">
+                        <Brain className="h-4 w-4" />
+                        OpenAI GPT
+                      </div>
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {/* Provider Status */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="p-4 rounded-lg bg-green-500/10 border border-green-500/30">
+                  <div className="flex items-center gap-2 mb-2">
+                    <Zap className="h-4 w-4 text-green-400" />
+                    <h4 className="font-medium text-green-300">Google Gemini</h4>
+                  </div>
+                  <p className="text-sm text-green-200/80">
+                    Fast, cost-effective, good for structured content
+                  </p>
+                  <div className="mt-2 text-xs text-green-200/60">
+                    Cost: ~$0.001 per 1K tokens
+                  </div>
+                </div>
+
+                <div className="p-4 rounded-lg bg-blue-500/10 border border-blue-500/30">
+                  <div className="flex items-center gap-2 mb-2">
+                    <Brain className="h-4 w-4 text-blue-400" />
+                    <h4 className="font-medium text-blue-300">OpenAI GPT</h4>
+                  </div>
+                  <p className="text-sm text-blue-200/80">
+                    Reliable, high-quality, good for complex reasoning
+                  </p>
+                  <div className="mt-2 text-xs text-blue-200/60">
+                    Cost: ~$0.002 per 1K tokens
+                  </div>
+                </div>
+              </div>
+
+              {/* Auto-Rotation Info */}
+              {selectedLLM === "auto" && (
+                <div className="p-4 rounded-lg bg-purple-500/10 border border-purple-500/30">
+                  <div className="flex items-center gap-2 mb-2">
+                    <RefreshCw className="h-4 w-4 text-purple-400" />
+                    <h4 className="font-medium text-purple-300">Auto-Rotation Active</h4>
+                  </div>
+                  <p className="text-sm text-purple-200/80">
+                    The system will automatically choose the best available provider for each request.
+                    Falls back to alternative providers if the primary fails.
+                  </p>
+                </div>
+              )}
+            </CardContent>
+          </Card>
 
           {/* Gemini API Settings */}
           <Card className="mb-6 bg-white/10 border-white/20">
