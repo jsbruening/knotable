@@ -112,7 +112,7 @@ CAMPAIGN DETAILS:
 - Starting Bloom Level: ${campaignData.startingBloomLevel} (${levelNames[campaignData.startingBloomLevel]})
 - Target Bloom Level: ${campaignData.targetBloomLevel} (${levelNames[campaignData.targetBloomLevel]})
 - Focus Areas: ${campaignData.focusAreas?.join(", ") || "None specified"}
-- Estimated Duration: ${campaignData.estimatedDuration || "Not specified"}
+- Estimated Duration: ${campaignData.estimatedDuration || "Not specified"} days
 - Tone: ${campaignData.tone || "Professional"}
 
 LEARNING PARAMETERS:
@@ -127,6 +127,18 @@ ADVANCED CONFIGURATION:
 - Final Learning Outcome: ${aiParams.finalLearningOutcome || "Comprehensive understanding"}
 - Question Format: ${aiParams.questionFormat || "Multiple choice"}
 
+DOMAIN STANDARDS:
+- Use current, industry-standard practices for the specified topic
+- Avoid outdated or deprecated methods/approaches
+- Prioritize official documentation and authoritative sources
+- Ensure all content reflects modern best practices
+
+STRUCTURE REQUIREMENTS:
+- Each milestone must contain 2-5 detailed lessons
+- Use whole hour increments for time estimates (e.g., "1-2 hours", "3-4 hours")
+- Progress sequentially through Bloom levels ${campaignData.startingBloomLevel} to ${campaignData.targetBloomLevel}
+- Each milestone must strictly correspond to one Bloom's Taxonomy level
+
 IMPORTANT:
 - Use real, high-quality educational resources when possible
 - Make objectives specific and measurable
@@ -136,14 +148,14 @@ IMPORTANT:
 - Each milestone should build on the previous one
 
 RESOURCE GUIDANCE:
+- Prioritize official documentation and industry leaders
+- If specific links are unavailable, use placeholder URLs with clear descriptions
 - Mix documentation, videos, tutorials, and interactive content
+- Focus on authoritative sources and current materials
 
 FINAL OUTCOME GUIDANCE:
 - Culminate in a production-ready deployed application
 - Include testing, performance optimization, and documentation
-
-TASK:
-Create a comprehensive learning campaign with ${campaignData.targetBloomLevel - campaignData.startingBloomLevel + 1} milestones, progressing from Bloom level ${campaignData.startingBloomLevel} to ${campaignData.targetBloomLevel}.
 
 Return ONLY a valid JSON object with this exact structure:
 {
@@ -187,7 +199,10 @@ Return ONLY a valid JSON object with this exact structure:
       ]
     }
   ]
-}`;
+}
+
+TASK:
+Create a comprehensive learning campaign with exactly ${campaignData.targetBloomLevel - campaignData.startingBloomLevel + 1} milestones. Each milestone must strictly correspond to one Bloom's Taxonomy level, progressing sequentially from Level ${campaignData.startingBloomLevel} (${levelNames[campaignData.startingBloomLevel]}) to Level ${campaignData.targetBloomLevel} (${levelNames[campaignData.targetBloomLevel]}).`;
   };
 
   // Initialize the prompt when component loads
