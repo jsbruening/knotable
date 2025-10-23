@@ -28,10 +28,7 @@ export function GlobalNav() {
 
   // Don't show navigation on auth pages
   const isAuthPage = pathname.startsWith("/auth/");
-  if (isAuthPage) {
-    return null;
-  }
-
+  
   const navigation = [
     { name: "Dashboard", href: "/dashboard", icon: Home },
     { name: "Campaigns", href: "/campaigns", icon: Target },
@@ -48,6 +45,11 @@ export function GlobalNav() {
   const handleSignOut = async () => {
     await signOut();
   };
+
+  // Don't show navigation on auth pages
+  if (isAuthPage) {
+    return null;
+  }
 
   return (
     <>
