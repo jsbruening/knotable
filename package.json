@@ -22,7 +22,12 @@
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
     "test:ci": "jest --ci --coverage --watchAll=false",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "sonar": "sonar-scanner",
+    "sonar:local": "sonar-scanner -Dsonar.projectKey=knotable -Dsonar.sources=. -Dsonar.host.url=http://localhost:9000 -Dsonar.token=sqp_761197ee601a88b70a43b31be99fcdeb73cde359",
+    "sonar:analyze": "npm run test:coverage && npm run sonar:local",
+    "quality:check": "npm run lint && npm run typecheck && npm run test:ci",
+    "quality:full": "npm run quality:check && npm run sonar:analyze"
   },
   "dependencies": {
     "@google/genai": "^1.25.0",
