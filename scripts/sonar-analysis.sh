@@ -4,6 +4,14 @@
 
 echo "🔍 Starting SonarQube Analysis for Knotable..."
 
+# Check if SONAR_TOKEN is set
+if [ -z "$SONAR_TOKEN" ]; then
+    echo "❌ SONAR_TOKEN environment variable is not set"
+    echo "Please set your SonarQube token:"
+    echo "export SONAR_TOKEN=your_token_here"
+    exit 1
+fi
+
 # Check if SonarQube is running
 echo "📡 Checking SonarQube connection..."
 if ! curl -s http://localhost:9000/api/system/status > /dev/null; then

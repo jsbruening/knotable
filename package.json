@@ -24,7 +24,7 @@
     "test:ci": "jest --ci --coverage --watchAll=false",
     "typecheck": "tsc --noEmit",
     "sonar": "sonar-scanner",
-    "sonar:local": "sonar-scanner -Dsonar.projectKey=Knotable -Dsonar.sources=. -Dsonar.host.url=http://localhost:9000 -Dsonar.token=sqp_88fc08c1dbc9e3dd0c2528d05e1d6b17df76f932",
+    "sonar:local": "sonar-scanner -Dsonar.projectKey=Knotable -Dsonar.sources=. -Dsonar.host.url=http://localhost:9000 -Dsonar.token=${SONAR_TOKEN}",
     "sonar:analyze": "npm run test:coverage && npm run sonar:local",
     "quality:check": "npm run lint && npm run typecheck && npm run test:ci",
     "quality:full": "npm run quality:check && npm run sonar:analyze"

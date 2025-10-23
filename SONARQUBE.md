@@ -2,12 +2,23 @@
 
 This project is integrated with SonarQube for comprehensive code quality analysis.
 
+## 🔐 Environment Setup
+
+### Required Environment Variables
+Create a `.env.local` file in the project root with:
+```bash
+SONAR_TOKEN=your_sonarqube_token_here
+```
+
+**Security Note**: Never commit the actual token to version control. Use environment variables or secure secret management.
+
 ## 🚀 Quick Start
 
 ### Prerequisites
 - Local SonarQube instance running on `http://localhost:9000`
 - Node.js and npm installed
 - SonarQube scanner installed globally: `npm install -g sonar-scanner`
+- `SONAR_TOKEN` environment variable set
 
 ### Running Analysis
 
