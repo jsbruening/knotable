@@ -7,7 +7,7 @@ import { JoinCampaigns } from "./join-campaigns";
 import { JoinTeams } from "./join-teams";
 import { QuickTour } from "./quick-tour";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
-import { AwesomeProgressTracker } from "~/components/ui/awesome-progress-tracker";
+import { EpicProgressTracker } from "~/components/ui/epic-progress-tracker";
 import { api } from "~/trpc/react";
 import { useRouter } from "next/navigation";
 
@@ -109,12 +109,13 @@ export default function OnboardingPage() {
               Let's get you set up for your learning journey
             </p>
 
-            {/* Awesome Progress Tracker */}
-            <div className="mx-auto mb-8 max-w-2xl">
-              <AwesomeProgressTracker 
+            {/* Epic Progress Tracker */}
+            <div className="mx-auto mb-8 max-w-3xl">
+              <EpicProgressTracker 
                 steps={steps} 
                 currentStep={currentStep - 1} 
-                variant="detailed"
+                variant="gamified"
+                theme="cosmic"
               />
             </div>
 

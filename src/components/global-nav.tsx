@@ -28,7 +28,7 @@ export function GlobalNav() {
 
   // Don't show navigation on auth pages
   const isAuthPage = pathname.startsWith("/auth/");
-  
+
   const navigation = [
     { name: "Dashboard", href: "/dashboard", icon: Home },
     { name: "Campaigns", href: "/campaigns", icon: Target },
@@ -77,11 +77,10 @@ export function GlobalNav() {
                   <Link key={item.name} href={item.href}>
                     <Button
                       variant={isActive(item.href) ? "default" : "ghost"}
-                      className={`flex items-center space-x-2 ${
-                        isActive(item.href)
+                      className={`flex items-center space-x-2 ${isActive(item.href)
                           ? "bg-white/20 text-white"
                           : "text-white/80 hover:bg-white/10 hover:text-white"
-                      }`}
+                        }`}
                     >
                       <Icon className="h-4 w-4" />
                       <span>{item.name}</span>
@@ -202,11 +201,10 @@ export function GlobalNav() {
                     >
                       <Button
                         variant={isActive(item.href) ? "default" : "ghost"}
-                        className={`w-full justify-start ${
-                          isActive(item.href)
+                        className={`w-full justify-start ${isActive(item.href)
                             ? "bg-white/20 text-white"
                             : "text-white/80 hover:bg-white/10 hover:text-white"
-                        }`}
+                          }`}
                       >
                         <Icon className="mr-3 h-4 w-4" />
                         <span>{item.name}</span>

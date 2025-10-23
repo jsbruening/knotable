@@ -8,7 +8,7 @@ import {
   CardTitle,
 } from "~/components/ui/card";
 import { Progress } from "~/components/ui/progress";
-import { AwesomeProgressTracker } from "~/components/ui/awesome-progress-tracker";
+import { EpicProgressTracker } from "~/components/ui/epic-progress-tracker";
 import { Loader2, Sparkles, FileText, Brain, CheckCircle } from "lucide-react";
 
 interface ProgressiveLoadingProps {
@@ -70,7 +70,7 @@ export function ProgressiveLoading({
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <AwesomeProgressTracker 
+        <EpicProgressTracker 
           steps={[
             { id: "building", title: "Building Prompt", description: "Crafting AI prompt" },
             { id: "calling", title: "Calling AI", description: "Generating content" },
@@ -79,6 +79,7 @@ export function ProgressiveLoading({
           ]} 
           currentStep={stage === "building-prompt" ? 0 : stage === "calling-ai" ? 1 : stage === "parsing-response" ? 2 : stage === "complete" ? 3 : 0} 
           variant="minimal"
+          theme="fire"
         />
       </CardContent>
     </Card>

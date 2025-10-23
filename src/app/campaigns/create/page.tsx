@@ -9,7 +9,7 @@ import {
 } from "~/components/ui/card";
 import { Button } from "~/components/ui/button";
 import { Progress } from "~/components/ui/progress";
-import { AwesomeProgressTracker } from "~/components/ui/awesome-progress-tracker";
+import { EpicProgressTracker } from "~/components/ui/epic-progress-tracker";
 import { api } from "~/trpc/react";
 import { useAuth } from "~/components/auth/auth-provider";
 import Link from "next/link";
@@ -108,13 +108,14 @@ export default function CreateCampaignPage() {
     <div className="bg-app-gradient min-h-screen">
       <div className="container mx-auto px-4 py-8">
         <div className="mx-auto max-w-4xl">
-          {/* Awesome Progress Tracker */}
+          {/* Epic Progress Tracker */}
           <Card className="mb-8 bg-white/10 border-white/20">
             <CardContent className="p-6">
-              <AwesomeProgressTracker 
+              <EpicProgressTracker 
                 steps={STEPS} 
                 currentStep={currentStep} 
-                variant="detailed"
+                variant="epic"
+                theme="neon"
               />
             </CardContent>
           </Card>
