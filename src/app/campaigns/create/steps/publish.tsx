@@ -50,7 +50,11 @@ export function PublishStep() {
       });
 
       // Update campaign with final scope
-      const updateData: any = {
+      const updateData: {
+        id: string;
+        teamId?: string;
+        isPublic: boolean;
+      } = {
         id: campaign.id,
       };
 
@@ -128,7 +132,7 @@ export function PublishStep() {
     return errors;
   };
 
-  const handlePublishClick = () => {
+  const handlePublishClick = async () => {
     const validationErrors = validatePublish();
 
     if (validationErrors.length > 0) {
@@ -136,7 +140,7 @@ export function PublishStep() {
       return;
     }
 
-    handlePublish();
+    await handlePublish();
   };
 
   return (

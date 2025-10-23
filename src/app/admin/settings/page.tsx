@@ -32,8 +32,8 @@ export default function AdminSettings() {
   
   // Mutations for updating settings
   const setGeminiDisabledMutation = api.adminSettings.set.useMutation({
-    onSuccess: () => {
-      refetchSettings();
+    onSuccess: async () => {
+      await refetchSettings();
       toast.success("Gemini API setting updated");
     },
     onError: (error) => {
@@ -42,8 +42,8 @@ export default function AdminSettings() {
   });
 
   const setLLMProviderMutation = api.adminSettings.set.useMutation({
-    onSuccess: () => {
-      refetchSettings();
+    onSuccess: async () => {
+      await refetchSettings();
       toast.success("LLM Provider setting updated");
     },
     onError: (error) => {
@@ -53,9 +53,17 @@ export default function AdminSettings() {
 
   // Load settings from database on mount
   useEffect(() => {
-    if (adminSettings) {
-      setIsGeminiDisabled(adminSettings.gemini_disabled?.value === "true");
-      setSelectedLLM(adminSettings.llm_provider?.value || "auto");
+    if (adminSettings && typeof adminSettings === 'object') {
+      const geminiSetting = adminSettings.gemini_disabled;
+      const llmSetting = adminSettings.llm_provider;
+      
+      if (geminiSetting && typeof geminiSetting === 'object' && 'value' in geminiSetting) {
+        setIsGeminiDisabled(geminiSetting.value === "true");
+      }
+      
+      if (llmSetting && typeof llmSetting === 'object' && 'value' in llmSetting) {
+        setSelectedLLM(llmSetting.value ?? "auto");
+      }
     }
   }, [adminSettings]);
 
@@ -102,7 +110,7 @@ export default function AdminSettings() {
   const { data: currentUser } = api.auth.getCurrentUser.useQuery();
 
   // Show access denied if not admin
-  if (!currentUser?.isAdmin) {
+  if (currentUser && typeof currentUser === 'object' && 'isAdmin' in currentUser && !currentUser.isAdmin) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-app-gradient">
         <Card className="mx-auto max-w-md bg-white/10 border-white/20">
@@ -302,7 +310,7 @@ export default function AdminSettings() {
                   DISABLE_GEMINI=true
                 </code>
                 <p className="text-xs text-blue-200/60 mt-2">
-                  Set to "true" or "1" to disable, "false" or "0" to enable
+                  Set to &quot;true&quot; or &quot;1&quot; to disable, &quot;false&quot; or &quot;0&quot; to enable
                 </p>
               </div>
             </CardContent>

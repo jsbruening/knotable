@@ -133,10 +133,10 @@ export default function LearningSessionPage() {
 
   const utils = api.useUtils();
   const refreshResourcesMutation = api.campaign.refreshResources.useMutation({
-    onSuccess: (result) => {
+    onSuccess: async (result) => {
       toast.success(result.message);
       if (sessionId) {
-        utils.campaign.getLearningSession.invalidate({ sessionId });
+        await utils.campaign.getLearningSession.invalidate({ sessionId });
       }
     },
     onError: (error) => {

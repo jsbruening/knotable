@@ -40,9 +40,9 @@ export default function CampaignDetailPage() {
   });
   const utils = api.useUtils();
   const joinCampaignMutation = api.campaign.join.useMutation({
-    onSuccess: () => {
+    onSuccess: async () => {
       // Invalidate the campaign query to refresh the enrollment status
-      utils.campaign.getById.invalidate({ id: campaignId });
+      await utils.campaign.getById.invalidate({ id: campaignId });
     },
   });
   const deleteCampaignMutation = api.campaign.delete.useMutation();
@@ -431,6 +431,7 @@ export default function CampaignDetailPage() {
 
                         {/* Assessment Questions for the main milestone */}
                         {milestone.assessmentQuestions &&
+                          Array.isArray(milestone.assessmentQuestions) &&
                           milestone.assessmentQuestions.length > 0 && (
                             <div>
                               <h4 className="mb-3 font-semibold text-white">
@@ -438,46 +439,47 @@ export default function CampaignDetailPage() {
                               </h4>
                               <div className="space-y-3">
                                 {milestone.assessmentQuestions.map(
-                                  (question, qIndex) => (
+                                  (question: any, qIndex: number) => (
                                     <div
                                       key={qIndex}
                                       className="rounded-lg border border-white/10 bg-white/5 p-3"
                                     >
                                       <p className="mb-2 text-sm font-medium text-white">
-                                        {question.question}
+                                        {typeof question === 'object' && question && 'question' in question ? question.question : 'Question'}
                                       </p>
                                       <div className="space-y-1">
-                                        {question.options?.map(
-                                          (option, oIndex) => (
-                                            <div
-                                              key={oIndex}
-                                              className="flex items-center space-x-2"
-                                            >
-                                              <span className="text-xs text-white/60">
-                                                {String.fromCharCode(
-                                                  65 + oIndex,
-                                                )}
-                                                .
-                                              </span>
-                                              <span className="text-xs text-white/80">
-                                                {option}
-                                              </span>
-                                              {question.correctAnswer ===
-                                                String.fromCharCode(
-                                                  65 + oIndex,
-                                                ) && (
-                                                  <Badge
-                                                    variant="glassGreen"
-                                                    className="text-xs"
-                                                  >
-                                                    Correct
-                                                  </Badge>
-                                                )}
-                                            </div>
-                                          ),
-                                        )}
+                                        {typeof question === 'object' && question && 'options' in question && Array.isArray(question.options) &&
+                                          question.options.map(
+                                            (option: any, oIndex: number) => (
+                                              <div
+                                                key={oIndex}
+                                                className="flex items-center space-x-2"
+                                              >
+                                                <span className="text-xs text-white/60">
+                                                  {String.fromCharCode(
+                                                    65 + oIndex,
+                                                  )}
+                                                  .
+                                                </span>
+                                                <span className="text-xs text-white/80">
+                                                  {typeof option === 'string' ? option : `Option ${oIndex + 1}`}
+                                                </span>
+                                                {typeof question === 'object' && question && 'correctAnswer' in question && question.correctAnswer ===
+                                                  String.fromCharCode(
+                                                    65 + oIndex,
+                                                  ) && (
+                                                    <Badge
+                                                      variant="glassGreen"
+                                                      className="text-xs"
+                                                    >
+                                                      Correct
+                                                    </Badge>
+                                                  )}
+                                              </div>
+                                            ),
+                                          )}
                                       </div>
-                                      {question.explanation && (
+                                      {typeof question === 'object' && question && 'explanation' in question && question.explanation && (
                                         <p className="mt-2 text-xs text-white/60 italic">
                                           {question.explanation}
                                         </p>
