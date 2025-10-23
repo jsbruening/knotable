@@ -111,9 +111,9 @@ export default function CreateCampaignPage() {
           {/* Epic Progress Tracker */}
           <Card className="mb-8 bg-white/10 border-white/20">
             <CardContent className="p-6">
-              <EpicProgressTracker 
-                steps={STEPS} 
-                currentStep={currentStep} 
+              <EpicProgressTracker
+                steps={STEPS}
+                currentStep={currentStep}
                 variant="epic"
                 theme="neon"
               />

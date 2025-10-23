@@ -13,11 +13,11 @@ import { Loader2, Sparkles, FileText, Brain, CheckCircle } from "lucide-react";
 
 interface ProgressiveLoadingProps {
   stage:
-    | "idle"
-    | "building-prompt"
-    | "calling-ai"
-    | "parsing-response"
-    | "complete";
+  | "idle"
+  | "building-prompt"
+  | "calling-ai"
+  | "parsing-response"
+  | "complete";
   message: string;
   progress: number;
 }
@@ -70,14 +70,14 @@ export function ProgressiveLoading({
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <EpicProgressTracker 
+        <EpicProgressTracker
           steps={[
             { id: "building", title: "Building Prompt", description: "Crafting AI prompt" },
             { id: "calling", title: "Calling AI", description: "Generating content" },
             { id: "parsing", title: "Parsing Response", description: "Processing results" },
             { id: "complete", title: "Complete", description: "Ready to use" },
-          ]} 
-          currentStep={stage === "building-prompt" ? 0 : stage === "calling-ai" ? 1 : stage === "parsing-response" ? 2 : stage === "complete" ? 3 : 0} 
+          ]}
+          currentStep={stage === "building-prompt" ? 0 : stage === "calling-ai" ? 1 : stage === "parsing-response" ? 2 : stage === "complete" ? 3 : 0}
           variant="minimal"
           theme="fire"
         />

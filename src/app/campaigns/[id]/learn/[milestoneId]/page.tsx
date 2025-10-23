@@ -374,31 +374,31 @@ export default function LearningSessionPage() {
             </CardContent>
           </Card>
 
-          {/* Sub-milestones */}
-          {milestone.subMilestones.length > 0 && (
+          {/* Lessons */}
+          {milestone.lessons && milestone.lessons.length > 0 && (
             <Card className="bg-white/10 border-white/20">
               <CardHeader>
-                <CardTitle className="text-white">Sub-milestones</CardTitle>
+                <CardTitle className="text-white">Lessons</CardTitle>
                 <CardDescription className="text-white/70">
                   Break down this milestone into smaller steps
                 </CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="grid gap-3">
-                  {milestone.subMilestones.map((subMilestone, index) => (
+                  {milestone.lessons.map((lesson, index) => (
                     <div
-                      key={subMilestone.id}
+                      key={lesson.id}
                       className="p-3 rounded-lg bg-white/5 border border-white/10"
                     >
                       <div className="text-white font-medium">
-                        {subMilestone.title}
+                        {lesson.title}
                       </div>
                       <div className="text-white/60 text-sm mt-1">
-                        {subMilestone.objective}
+                        {lesson.objective}
                       </div>
-                      {subMilestone.estimatedTime && (
+                      {lesson.estimatedTime && (
                         <div className="text-white/50 text-xs mt-2">
-                          Estimated: {subMilestone.estimatedTime}
+                          Estimated: {lesson.estimatedTime}
                         </div>
                       )}
                     </div>

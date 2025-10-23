@@ -111,35 +111,35 @@ export default function OnboardingPage() {
 
             {/* Epic Progress Tracker */}
             <div className="mx-auto mb-8 max-w-3xl">
-              <EpicProgressTracker 
-                steps={steps} 
-                currentStep={currentStep - 1} 
+              <EpicProgressTracker
+                steps={steps}
+                currentStep={currentStep - 1}
                 variant="gamified"
                 theme="cosmic"
               />
             </div>
 
-          {/* Step Content */}
-          <Card className="mx-auto max-w-2xl bg-white/10 border-white/20">
-            <CardHeader>
-              <CardTitle className="text-center text-white">
-                {steps[currentStep - 1]?.title}
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              {CurrentComponent && (
-                <CurrentComponent
-                  onNext={handleNext}
-                  onPrevious={handlePrevious}
-                  data={onboardingData}
-                  isFirstStep={currentStep === 1}
-                  isLastStep={currentStep === steps.length}
-                />
-              )}
-            </CardContent>
-          </Card>
+            {/* Step Content */}
+            <Card className="mx-auto max-w-2xl bg-white/10 border-white/20">
+              <CardHeader>
+                <CardTitle className="text-center text-white">
+                  {steps[currentStep - 1]?.title}
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                {CurrentComponent && (
+                  <CurrentComponent
+                    onNext={handleNext}
+                    onPrevious={handlePrevious}
+                    data={onboardingData}
+                    isFirstStep={currentStep === 1}
+                    isLastStep={currentStep === steps.length}
+                  />
+                )}
+              </CardContent>
+            </Card>
+          </div>
         </div>
       </div>
-    </div>
-  );
+      );
 }
