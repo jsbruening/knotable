@@ -1,9 +1,14 @@
 // Test Supabase connection
 import { createClient } from "@supabase/supabase-js";
 
-const supabaseUrl = "https://eyplrlnfdsnfwtyzanac.supabase.co";
-const supabaseAnonKey =
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV5cGxybG5mZHNuZnd0eXphbmFjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjA2OTAzOTYsImV4cCI6MjA3NjI2NjM5Nn0.ThM6lBRl7IXI4I8PVs2fWhQ-oazBqWElBigodIdef0Q";
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "https://eyplrlnfdsnfwtyzanac.supabase.co";
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "your-supabase-anon-key";
+
+if (!supabaseAnonKey || supabaseAnonKey === "your-supabase-anon-key") {
+  console.error("❌ NEXT_PUBLIC_SUPABASE_ANON_KEY environment variable is not set");
+  console.log("Please set NEXT_PUBLIC_SUPABASE_ANON_KEY in your .env.local file");
+  process.exit(1);
+}
 
 const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
