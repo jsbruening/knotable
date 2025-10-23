@@ -1,0 +1,6 @@
+projectKey=Knotable
+serverUrl=http://localhost:9000
+serverVersion=25.9.0.112764
+dashboardUrl=http://localhost:9000/dashboard?id=Knotable
+ceTaskId=4f18e7a6-f767-4403-9cdb-2f3b5824b77e
+ceTaskUrl=http://localhost:9000/api/ce/task?id=4f18e7a6-f767-4403-9cdb-2f3b5824b77e

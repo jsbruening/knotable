@@ -280,9 +280,7 @@ export default function CampaignDetailPage() {
                             </CardTitle>
                             <div className="mt-1 flex items-center space-x-2">
                               <LevelPill
-                                level={
-                                  milestone.bloomLevel as 1 | 2 | 3 | 4 | 5 | 6
-                                }
+                                level={milestone.bloomLevel}
                               />
                               <Badge variant="glass" className="text-xs">
                                 Milestone {index + 1}

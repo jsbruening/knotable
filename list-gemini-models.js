@@ -60,7 +60,7 @@ async function listAvailableModels() {
         },
       ]);
 
-      const response = await result.response;
+      const response = result.response;
       const content = response.text();
 
       console.log(`✅ SUCCESS with model: ${modelName}`);
