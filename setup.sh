@@ -8,8 +8,8 @@ if [ ! -f .env ]; then
     echo "📝 Creating .env file from template..."
     cat > .env << EOF
 # Database
-DATABASE_URL="postgresql://postgres.eyplrlnfdsnfwtyzanac:OlF80boeAvvgA2Wj@aws-1-us-east-2.pooler.supabase.com:6543/postgres?pgbouncer=true"
-DIRECT_URL="postgresql://postgres.eyplrlnfdsnfwtyzanac:OlF80boeAvvgA2Wj@aws-1-us-east-2.pooler.supabase.com:5432/postgres"
+DATABASE_URL="\${DATABASE_URL}"
+DIRECT_URL="\${DIRECT_URL}"
 
 # Supabase
 NEXT_PUBLIC_SUPABASE_URL="https://eyplrlnfdsnfwtyzanac.supabase.co"
